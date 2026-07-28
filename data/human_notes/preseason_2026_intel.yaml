@@ -1,0 +1,183 @@
+# 2026 Preseason Intelligence
+# Sources: ESPN Newcomers Impact Rankings, Sharp Football SOS
+# ============================================================
+
+season: 2026
+
+# Strength of Schedule (1 = easiest, 32 = hardest)
+# Based on Vegas Forecasted Win Totals (Sharp Football Analysis)
+strength_of_schedule:
+  easiest_5:
+    - DET  # 1 - Lions
+    - CIN  # 2 - Bengals
+    - NO   # 3 - Saints
+    - NYJ  # 4 - Jets
+    - HOU  # 5 - Texans
+  hardest_5:
+    - ARI  # 32 - Cardinals (hardest)
+    - MIA  # 31 - Dolphins
+    - CAR  # 30 - Panthers
+    - WAS  # 29 - Commanders
+    - DAL  # 28 - Cowboys
+
+# Key player movement (new team → affects early season props)
+# Per our confirmed finding: New team + weeks 1-4 → UNDER hits at 55.2%
+new_team_players:
+  # WRs on new teams (high prop impact)
+  - player: "A.J. Brown"
+    new_team: NE
+    old_team: PHI
+    position: WR
+    notes: |
+      True WR1. Had 1000+ yards 4 straight seasons in PHI.
+      New QB (Drake Maye). Building chemistry takes time.
+      Week 1-4 receiving yards/receptions: LEAN UNDER.
+    props_affected:
+      - receiving_yards: under_early
+      - receptions: under_early
+
+  - player: "DJ Moore"
+    new_team: BUF
+    old_team: CHI
+    position: WR
+    notes: |
+      Explosive with catch-and-run skills. Josh Allen connection.
+      "Should see over 100 targets" per ESPN. But new system = adjustment.
+      Week 1-4: LEAN UNDER. Mid-season: could be OVER candidate.
+    props_affected:
+      - receiving_yards: under_early_over_late
+      - receptions: under_early_over_late
+
+  - player: "Jaylen Waddle"
+    new_team: DEN
+    old_team: MIA
+    position: WR
+    notes: |
+      Speed threat but now with Bo Nix (less arm talent than Tua).
+      Denver has Sutton already. Target share will be split.
+      Strong UNDER candidate weeks 1-6.
+    props_affected:
+      - receiving_yards: under
+
+  - player: "Mike Evans"
+    new_team: SF
+    old_team: TB
+    position: WR
+    notes: |
+      11 consecutive 1000-yard seasons. Now in Shanahan system.
+      Play-action heavy = deep shots. But injuries limited 2025.
+      Age 33. New system. Lean UNDER early, reassess by week 5.
+    props_affected:
+      - receiving_yards: under_early
+
+  - player: "Makai Lemon"
+    new_team: PHI
+    old_team: "Rookie (USC)"
+    position: WR
+    notes: |
+      Replaces A.J. Brown. No. 2 behind DeVonta Smith.
+      Rookie + new role = big variance. FanDuel may overprice.
+      UNDER on receiving props until proven.
+    props_affected:
+      - receiving_yards: under
+
+  # QBs on new teams
+  - player: "Kyler Murray"
+    new_team: MIN
+    old_team: ARI
+    position: QB
+    notes: |
+      O'Connell system (rhythm throws, play-action). Justin Jefferson is elite target.
+      But new system = timing adjustment. Rushing props may be safer.
+      Pass yards UNDER weeks 1-3. Rush props could be OVER.
+    props_affected:
+      - passing_yards: under_early
+      - rushing_yards: over
+
+  - player: "Malik Willis"
+    new_team: MIA
+    old_team: GB
+    position: QB
+    notes: |
+      Very limited NFL starts. Dual-threat but raw passer.
+      Only 4 appearances last season. 85.7% completion (tiny sample).
+      HEAVY UNDER on passing yards/TDs. Rush yards may go over.
+    props_affected:
+      - passing_yards: strong_under
+      - passing_tds: strong_under
+      - rushing_yards: over
+
+  - player: "Geno Smith"
+    new_team: NYJ
+    old_team: LV
+    position: QB
+    notes: |
+      17 INTs last season (league high). Decision-making issues.
+      Better weapons in NYJ (Garrett Wilson, Cooper Jr., Sadiq).
+      Still: INT props OVER. Pass TD props UNDER.
+    props_affected:
+      - passing_tds: under
+      - interceptions: over
+
+  - player: "Kirk Cousins"
+    new_team: LV
+    old_team: ATL
+    position: QB
+    notes: |
+      Familiar with Kubiak's system (worked together in MIN).
+      Less new-team penalty than others. Steady floor.
+      Exception to the new-team UNDER rule.
+    props_affected:
+      - passing_yards: neutral
+
+  # RBs on new teams
+  - player: "Kenneth Walker III"
+    new_team: KC
+    old_team: SEA
+    position: RB
+    notes: |
+      Andy Reid system. 33 rushes of 10+ yards in 2025 (6th most).
+      Chiefs averaged 4.2 YPC last year (bottom half). Clear upgrade.
+      Rush yards could be OVER once established. Weeks 3+ target.
+    props_affected:
+      - rushing_yards: over_mid_season
+
+  - player: "Jeremiyah Love"
+    new_team: ARI
+    old_team: "Rookie (Notre Dame)"
+    position: RB
+    notes: |
+      21 TDs in final college season. 3-down back.
+      Compared to Jahmyr Gibbs. Hardest schedule in NFL (#32).
+      HARDEST SCHEDULE = props suppressed. UNDER lean.
+    props_affected:
+      - rushing_yards: under
+      - anytime_td: under
+
+  # TEs (breakout candidates)
+  - player: "Isaiah Likely"
+    new_team: NYG
+    old_team: BAL
+    position: TE
+    notes: |
+      "Breakout candidate" per ESPN. Was behind Mark Andrews.
+      Giants new QB (Jaxson Dart) - both are new.
+      Our finding: TEs most exploitable position (53% profitable).
+      New team penalty still applies. UNDER weeks 1-3, then reassess.
+    props_affected:
+      - receiving_yards: under_early
+      - receptions: under_early
+
+# Game-level notes for Week 1 strategy
+week_1_strategy:
+  notes: |
+    CONFIRMED FINDING: Week 1 ALL UNDER hits at 63.8% (3/3 seasons).
+    Pass TDs UNDER: 75.8%. Pass yards UNDER: 70.6%.
+    This is our single biggest edge of the entire season.
+    
+    ADDITIONAL 2026 CONTEXT: 
+    - 10+ significant new QB/WR combinations
+    - More team changes than usual = even MORE Week 1 under value
+    - Target players on new teams ESPECIALLY hard
+    
+    BET SIZING: 2-3 units on each Week 1 under play (max confidence).

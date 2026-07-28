@@ -1,0 +1,377 @@
+# NFL Stadium Database
+# Used for surface, roof, altitude, timezone adjustments
+# ======================================================
+
+stadiums:
+  # AFC East
+  hard_rock_stadium:
+    name: Hard Rock Stadium
+    team: Miami Dolphins
+    city: Miami Gardens, FL
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 65326
+    altitude_ft: 7
+    coordinates: [25.958, -80.239]
+
+  highmark_stadium:
+    name: Highmark Stadium
+    team: Buffalo Bills
+    city: Orchard Park, NY
+    timezone: America/New_York
+    surface: turf  # A-Turf Titan
+    roof: open
+    capacity: 71608
+    altitude_ft: 600
+    coordinates: [42.774, -78.787]
+
+  gillette_stadium:
+    name: Gillette Stadium
+    team: New England Patriots
+    city: Foxborough, MA
+    timezone: America/New_York
+    surface: turf  # FieldTurf
+    roof: open
+    capacity: 65878
+    altitude_ft: 279
+    coordinates: [42.091, -71.264]
+
+  metlife_stadium:
+    name: MetLife Stadium
+    team: [New York Giants, New York Jets]
+    city: East Rutherford, NJ
+    timezone: America/New_York
+    surface: turf  # UBU Speed Series
+    roof: open
+    capacity: 82500
+    altitude_ft: 30
+    coordinates: [40.814, -74.074]
+
+  # AFC North
+  acrisure_stadium:
+    name: Acrisure Stadium
+    team: Pittsburgh Steelers
+    city: Pittsburgh, PA
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 68400
+    altitude_ft: 748
+    coordinates: [40.447, -80.016]
+
+  paycor_stadium:
+    name: Paycor Stadium
+    team: Cincinnati Bengals
+    city: Cincinnati, OH
+    timezone: America/New_York
+    surface: turf  # FieldTurf
+    roof: open
+    capacity: 65515
+    altitude_ft: 482
+    coordinates: [39.095, -84.516]
+
+  m_and_t_bank_stadium:
+    name: M&T Bank Stadium
+    team: Baltimore Ravens
+    city: Baltimore, MD
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 71008
+    altitude_ft: 25
+    coordinates: [39.278, -76.623]
+
+  huntington_bank_field:
+    name: Huntington Bank Field
+    team: Cleveland Browns
+    city: Cleveland, OH
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 67431
+    altitude_ft: 583
+    coordinates: [41.506, -81.700]
+
+  # AFC South
+  nrg_stadium:
+    name: NRG Stadium
+    team: Houston Texans
+    city: Houston, TX
+    timezone: America/Chicago
+    surface: turf  # AstroTurf
+    roof: retractable
+    capacity: 72220
+    altitude_ft: 50
+    coordinates: [29.685, -95.411]
+
+  lucas_oil_stadium:
+    name: Lucas Oil Stadium
+    team: Indianapolis Colts
+    city: Indianapolis, IN
+    timezone: America/Indiana/Indianapolis
+    surface: turf  # FieldTurf
+    roof: retractable
+    capacity: 67000
+    altitude_ft: 715
+    coordinates: [39.760, -86.164]
+
+  nissan_stadium:
+    name: Nissan Stadium
+    team: Tennessee Titans
+    city: Nashville, TN
+    timezone: America/Chicago
+    surface: turf  # FieldTurf (new stadium)
+    roof: open
+    capacity: 69143
+    altitude_ft: 433
+    coordinates: [36.166, -86.771]
+
+  everbank_stadium:
+    name: EverBank Stadium
+    team: Jacksonville Jaguars
+    city: Jacksonville, FL
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 67814
+    altitude_ft: 16
+    coordinates: [30.324, -81.637]
+
+  # AFC West
+  arrowhead_stadium:
+    name: GEHA Field at Arrowhead Stadium
+    team: Kansas City Chiefs
+    city: Kansas City, MO
+    timezone: America/Chicago
+    surface: grass
+    roof: open
+    capacity: 76416
+    altitude_ft: 800
+    coordinates: [39.049, -94.484]
+
+  empower_field:
+    name: Empower Field at Mile High
+    team: Denver Broncos
+    city: Denver, CO
+    timezone: America/Denver
+    surface: grass
+    roof: open
+    capacity: 76125
+    altitude_ft: 5280
+    coordinates: [39.744, -105.020]
+
+  allegiant_stadium:
+    name: Allegiant Stadium
+    team: Las Vegas Raiders
+    city: Las Vegas, NV
+    timezone: America/Los_Angeles
+    surface: grass  # natural grass tray system
+    roof: dome
+    capacity: 65000
+    altitude_ft: 2001
+    coordinates: [36.091, -115.184]
+
+  sofi_stadium:
+    name: SoFi Stadium
+    team: [Los Angeles Chargers, Los Angeles Rams]
+    city: Inglewood, CA
+    timezone: America/Los_Angeles
+    surface: turf  # Matrix Turf
+    roof: dome  # open-air concept but covered
+    capacity: 70240
+    altitude_ft: 105
+    coordinates: [33.953, -118.339]
+
+  # NFC East
+  at_and_t_stadium:
+    name: AT&T Stadium
+    team: Dallas Cowboys
+    city: Arlington, TX
+    timezone: America/Chicago
+    surface: turf  # Hellas Matrix Turf
+    roof: retractable
+    capacity: 80000
+    altitude_ft: 594
+    coordinates: [32.748, -97.093]
+
+  lincoln_financial_field:
+    name: Lincoln Financial Field
+    team: Philadelphia Eagles
+    city: Philadelphia, PA
+    timezone: America/New_York
+    surface: grass  # hybrid Desso GrassMaster
+    roof: open
+    capacity: 69176
+    altitude_ft: 30
+    coordinates: [39.901, -75.167]
+
+  commanders_field:
+    name: Northwest Stadium
+    team: Washington Commanders
+    city: Landover, MD
+    timezone: America/New_York
+    surface: grass  # Bermuda
+    roof: open
+    capacity: 67617
+    altitude_ft: 160
+    coordinates: [38.908, -76.864]
+
+  # NFC North
+  lambeau_field:
+    name: Lambeau Field
+    team: Green Bay Packers
+    city: Green Bay, WI
+    timezone: America/Chicago
+    surface: grass  # Desso GrassMaster hybrid
+    roof: open
+    capacity: 81441
+    altitude_ft: 640
+    coordinates: [44.501, -88.062]
+
+  soldier_field:
+    name: Soldier Field
+    team: Chicago Bears
+    city: Chicago, IL
+    timezone: America/Chicago
+    surface: grass
+    roof: open
+    capacity: 61500
+    altitude_ft: 595
+    coordinates: [41.862, -87.617]
+
+  us_bank_stadium:
+    name: U.S. Bank Stadium
+    team: Minnesota Vikings
+    city: Minneapolis, MN
+    timezone: America/Chicago
+    surface: turf  # UBU Speed Series S5-M
+    roof: dome
+    capacity: 66655
+    altitude_ft: 830
+    coordinates: [44.974, -93.258]
+
+  ford_field:
+    name: Ford Field
+    team: Detroit Lions
+    city: Detroit, MI
+    timezone: America/Detroit
+    surface: turf  # FieldTurf
+    roof: dome
+    capacity: 65000
+    altitude_ft: 597
+    coordinates: [42.340, -83.046]
+
+  # NFC South
+  mercedes_benz_stadium:
+    name: Mercedes-Benz Stadium
+    team: Atlanta Falcons
+    city: Atlanta, GA
+    timezone: America/New_York
+    surface: turf  # FieldTurf
+    roof: retractable
+    capacity: 71000
+    altitude_ft: 1026
+    coordinates: [33.755, -84.401]
+
+  bank_of_america_stadium:
+    name: Bank of America Stadium
+    team: Carolina Panthers
+    city: Charlotte, NC
+    timezone: America/New_York
+    surface: grass  # Tifway 419 Bermuda
+    roof: open
+    capacity: 74867
+    altitude_ft: 751
+    coordinates: [35.226, -80.853]
+
+  caesars_superdome:
+    name: Caesars Superdome
+    team: New Orleans Saints
+    city: New Orleans, LA
+    timezone: America/Chicago
+    surface: turf  # UBU Speed Series S5-M
+    roof: dome
+    capacity: 73208
+    altitude_ft: 3
+    coordinates: [29.951, -90.081]
+
+  raymond_james_stadium:
+    name: Raymond James Stadium
+    team: Tampa Bay Buccaneers
+    city: Tampa, FL
+    timezone: America/New_York
+    surface: grass
+    roof: open
+    capacity: 65890
+    altitude_ft: 36
+    coordinates: [27.976, -82.503]
+
+  # NFC West
+  state_farm_stadium:
+    name: State Farm Stadium
+    team: Arizona Cardinals
+    city: Glendale, AZ
+    timezone: America/Phoenix
+    surface: grass  # retractable natural grass tray
+    roof: retractable
+    capacity: 63400
+    altitude_ft: 1120
+    coordinates: [33.528, -112.263]
+
+  levis_stadium:
+    name: Levi's Stadium
+    team: San Francisco 49ers
+    city: Santa Clara, CA
+    timezone: America/Los_Angeles
+    surface: grass  # Bermuda
+    roof: open
+    capacity: 68500
+    altitude_ft: 43
+    coordinates: [37.403, -121.970]
+
+  lumen_field:
+    name: Lumen Field
+    team: Seattle Seahawks
+    city: Seattle, WA
+    timezone: America/Los_Angeles
+    surface: turf  # FieldTurf
+    roof: open
+    capacity: 68740
+    altitude_ft: 20
+    coordinates: [47.595, -122.332]
+
+# Team home stadium lookup (for quick reference)
+team_stadium_map:
+  ARI: state_farm_stadium
+  ATL: mercedes_benz_stadium
+  BAL: m_and_t_bank_stadium
+  BUF: highmark_stadium
+  CAR: bank_of_america_stadium
+  CHI: soldier_field
+  CIN: paycor_stadium
+  CLE: huntington_bank_field
+  DAL: at_and_t_stadium
+  DEN: empower_field
+  DET: ford_field
+  GB: lambeau_field
+  HOU: nrg_stadium
+  IND: lucas_oil_stadium
+  JAX: everbank_stadium
+  KC: arrowhead_stadium
+  LAC: sofi_stadium
+  LAR: sofi_stadium
+  LV: allegiant_stadium
+  MIA: hard_rock_stadium
+  MIN: us_bank_stadium
+  NE: gillette_stadium
+  NO: caesars_superdome
+  NYG: metlife_stadium
+  NYJ: metlife_stadium
+  PHI: lincoln_financial_field
+  PIT: acrisure_stadium
+  SEA: lumen_field
+  SF: levis_stadium
+  TB: raymond_james_stadium
+  TEN: nissan_stadium
+  WAS: commanders_field

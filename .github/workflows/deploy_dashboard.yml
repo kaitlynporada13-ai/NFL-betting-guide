@@ -1,0 +1,50 @@
+# Deploy Streamlit Dashboard to Streamlit Community Cloud
+# Triggered after predictions are updated, or manually
+
+name: Deploy Dashboard
+
+on:
+  workflow_run:
+    workflows: ["Weekly NFL Predictions"]
+    types: [completed]
+
+  workflow_dispatch:
+
+jobs:
+  # Streamlit Community Cloud auto-deploys from your repo.
+  # This workflow just validates the dashboard can run.
+  validate-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate Streamlit app loads
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from dashboard.data_loader import *
+          print('Dashboard data loader: OK')
+          "
+
+      - name: Check for syntax errors in pages
+        run: |
+          python -m py_compile dashboard/app.py
+          python -m py_compile dashboard/pages/1_Spreads.py
+          python -m py_compile dashboard/pages/2_Totals.py
+          python -m py_compile dashboard/pages/3_Player_Props.py
+          python -m py_compile dashboard/pages/4_Player_Detail.py
+          python -m py_compile dashboard/pages/5_Model_Performance.py
+          python -m py_compile dashboard/pages/6_Injuries_News.py
+          echo "All dashboard pages compile successfully"

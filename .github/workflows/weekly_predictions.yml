@@ -1,0 +1,102 @@
+# NFL Betting Analytics - Weekly Prediction Pipeline
+# Runs every Wednesday (data pull) and Thursday (predictions) during NFL season
+# Also can be triggered manually via workflow_dispatch
+
+name: Weekly NFL Predictions
+
+on:
+  schedule:
+    # Run Wednesday 8am ET (1pm UTC) - pull fresh data
+    - cron: '0 13 * * 3'
+    # Run Thursday 8am ET (1pm UTC) - generate predictions
+    - cron: '0 13 * * 4'
+    # Run Sunday 8am ET (1pm UTC) - final update with weather/inactives
+    - cron: '0 13 * * 0'
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Pipeline mode'
+        required: true
+        default: 'predict'
+        type: choice
+        options:
+          - predict
+          - train
+          - ingest-only
+
+env:
+  ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+  WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Determine run mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> $GITHUB_OUTPUT
+          elif [ "$(date +%u)" = "3" ]; then
+            # Wednesday: just ingest fresh data
+            echo "mode=ingest-only" >> $GITHUB_OUTPUT
+          elif [ "$(date +%u)" = "4" ]; then
+            # Thursday: full prediction run
+            echo "mode=predict" >> $GITHUB_OUTPUT
+          else
+            # Sunday: update with final weather/inactive info
+            echo "mode=predict" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Pull fresh data
+        if: steps.mode.outputs.mode == 'ingest-only' || steps.mode.outputs.mode == 'predict'
+        run: |
+          python -m pipeline.ingest_stats
+          python -m pipeline.ingest_odds
+          python -m pipeline.ingest_injuries
+          python -m pipeline.ingest_hierarchy
+
+      - name: Run predictions
+        if: steps.mode.outputs.mode == 'predict'
+        run: python -m pipeline.run_predictions
+
+      - name: Train models
+        if: steps.mode.outputs.mode == 'train'
+        run: |
+          python -m pipeline.ingest_stats
+          python -m pipeline.ingest_hierarchy
+          python -m pipeline.feature_engineering
+          python -m pipeline.run_predictions train
+
+      - name: Upload prediction artifacts
+        if: steps.mode.outputs.mode == 'predict'
+        uses: actions/upload-artifact@v4
+        with:
+          name: predictions-${{ github.run_number }}
+          path: |
+            data/processed/best_bets_latest.parquet
+            data/processed/*_latest.parquet
+
+      - name: Commit updated data
+        if: steps.mode.outputs.mode == 'predict' || steps.mode.outputs.mode == 'ingest-only'
+        run: |
+          git config user.name "NFL Bot"
+          git config user.email "bot@nfl-analytics.local"
+          git add -A data/processed/
+          git diff --staged --quiet || git commit -m "Auto-update: predictions $(date +%Y-%m-%d)"
+          git push

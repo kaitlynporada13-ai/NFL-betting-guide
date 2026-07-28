@@ -1,0 +1,77 @@
+# Historical Coordinator Changes (2024-2026)
+# Used for: Testing "new coordinator = early under" hypothesis historically
+# Source: FanDuel Research, CBS Sports, NFL Trade Rumors
+
+# 2024 SEASON: 7 new HCs, 15 new OCs, 17 new DCs
+season_2024:
+  new_head_coaches: [ATL, CAR, NE, SEA, TEN, WAS, LAC]
+  new_offensive_coordinators:
+    - {team: ATL, oc: "Zac Robinson", prev: "Rams QBs coach", first_time: true}
+    - {team: BAL, oc: "Zach Orr", prev: "Ravens ILBs coach", first_time: true, note: "DC not OC"}
+    - {team: BUF, oc: "Bobby Babich", prev: "Bills LBs coach", first_time: true, note: "DC not OC"}
+    - {team: CAR, oc: "Brad Idzik", prev: "Bucs WR coach", first_time: true}
+    - {team: CHI, oc: "Shane Waldron", prev: "Seahawks OC", first_time: false}
+    - {team: CIN, oc: "Dan Pitcher", prev: "Bengals QBs coach", first_time: true}
+    - {team: CLE, oc: "Ken Dorsey", prev: "Bills OC", first_time: false}
+    - {team: NE, oc: "Alex Van Pelt", prev: "Browns OC", first_time: false}
+    - {team: NO, oc: "Klint Kubiak", prev: "49ers pass specialist", first_time: true}
+    - {team: PHI, oc: "Kellen Moore", prev: "Chargers OC", first_time: false}
+    - {team: PIT, oc: "Arthur Smith", prev: "Falcons HC", first_time: false}
+    - {team: SEA, oc: "Ryan Grubb", prev: "Washington Huskies OC", first_time: true}
+    - {team: TEN, oc: "Nick Holz", prev: "Jaguars PGC", first_time: true}
+    - {team: LV, oc: "Luke Getsy", prev: "Bears OC", first_time: false}
+    - {team: WAS, oc: "Kliff Kingsbury", prev: "USC analyst", first_time: false}
+  new_defensive_coordinators:
+    - {team: ATL, dc: "Jimmy Lake", prev: "Rams AHC"}
+    - {team: BAL, dc: "Zach Orr", prev: "Ravens inside LBs coach"}
+    - {team: BUF, dc: "Bobby Babich", prev: "Bills LBs coach", first_time: true}
+    - {team: CHI, dc: "Eric Washington", prev: "Bills DL coach"}
+    - {team: DAL, dc: "Mike Zimmer", prev: "Analyst (former Vikings HC)"}
+    - {team: GB, dc: "Jeff Hafley", prev: "Boston College HC"}
+    - {team: JAX, dc: "Ryan Nielsen", prev: "Falcons DC"}
+    - {team: LAR, dc: "Chris Shula", prev: "Rams staff (internal)"}
+    - {team: MIA, dc: "Anthony Weaver", prev: "Ravens DL/AHC"}
+    - {team: NE, dc: "DeMarcus Covington", prev: "Patriots DL coach"}
+    - {team: NYG, dc: "Shane Bowen", prev: "Titans DC"}
+    - {team: PHI, dc: "Vic Fangio", prev: "Dolphins DC"}
+    - {team: SEA, dc: "Aden Durde", prev: "Cowboys DL coach"}
+    - {team: SF, dc: "Nick Sorensen", prev: "49ers nickel coach"}
+    - {team: TEN, dc: "Dennard Wilson", prev: "Ravens DBs coach"}
+    - {team: WAS, dc: "Joe Whitt Jr.", prev: "Cowboys secondary coach"}
+    - {team: LAC, dc: "Jesse Minter", prev: "Michigan DC"}
+
+# 2025 SEASON: ~5 new HCs, 12 new OCs, ~12 new DCs
+season_2025:
+  new_head_coaches: [CHI, DAL, JAX, NYJ, NO]
+  new_offensive_coordinators:
+    - {team: CHI, oc: "Declan Doyle", prev: "Broncos TE coach", first_time: true, note: "Ben Johnson calls plays"}
+    - {team: CLE, oc: "Tommy Rees", prev: "Browns TEs coach", first_time: true}
+    - {team: DAL, oc: "Klayton Adams", prev: "Cardinals OL coach", first_time: true}
+    - {team: DET, oc: "John Morton", prev: "Broncos PGC", first_time: false}
+    - {team: JAX, oc: "Grant Udinski", prev: "Vikings assistant OC", first_time: true}
+    - {team: LV, oc: "Chip Kelly", prev: "Ohio State OC", first_time: false}
+    - {team: NE, oc: "Josh McDaniels", prev: "Former Patriots OC/Raiders HC", first_time: false}
+    - {team: NYJ, oc: "Tanner Engstrand", prev: "Lions PGC", first_time: true}
+    - {team: SEA, oc: "Klint Kubiak", prev: "Saints OC", first_time: false}
+    - {team: SF, oc: "Klay Kubiak", prev: "49ers pass specialist", first_time: true}
+    - {team: TB, oc: "Josh Grizzard", prev: "Bucs PGC", first_time: true}
+    - {team: HOU, oc: "TBD (internal)", prev: "various candidates"}
+  new_defensive_coordinators:
+    - {team: ATL, dc: "Jeff Ulbrich", prev: "Jets interim HC"}
+    - {team: CHI, dc: "Dennis Allen", prev: "Former Saints HC"}
+    - {team: CIN, dc: "Al Golden", prev: "Notre Dame DC"}
+    - {team: CLE, dc: "Mike Rutenberg (2026)", note: "May have been late 2025 hire"}
+    - {team: DAL, dc: "Matt Eberflus", prev: "Former Bears HC"}
+    - {team: IND, dc: "Lou Anarumo", prev: "Former Bengals DC"}
+    - {team: JAX, dc: "Anthony Campanile", prev: "Packers LB coach"}
+    - {team: LV, dc: "Patrick Graham", prev: "Raiders DC (retained by new HC)"}
+    - {team: NE, dc: "Terrell Williams", prev: "Lions DL coach"}
+    - {team: SF, dc: "Robert Saleh", prev: "Former Jets HC"}
+
+# 2026 SEASON: See coaching_changes_2026.yaml for full detail
+# 10 new HCs, 21 new OCs, 14 new DCs (HIGHEST TURNOVER EVER)
+
+# SUMMARY FOR TESTING
+# 2024: 15 teams with new OCs - test props for those teams weeks 1-4
+# 2025: 12 teams with new OCs - test props for those teams weeks 1-4
+# 2026: 21 teams with new OCs - UNPRECEDENTED. Our edge should be maximized.

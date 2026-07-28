@@ -1,0 +1,50 @@
+# NFL Betting Analytics - Configuration
+# =======================================
+
+# API Keys (override via .env file or environment variables)
+api_keys:
+  odds_api: "${ODDS_API_KEY}"  # https://the-odds-api.com/ (free tier: 500 requests/month)
+  weather_api: "${WEATHER_API_KEY}"  # https://www.visualcrossing.com/ (free tier: 1000/day)
+
+# Target sportsbook
+sportsbook: fanduel
+
+# Data settings
+data:
+  historical_seasons: [2021, 2022, 2023, 2024, 2025]
+  current_season: 2025
+  odds_format: american  # american or decimal
+
+# Model settings
+model:
+  min_edge_threshold: 2.0  # minimum % edge to flag as a bet
+  confidence_tiers:
+    high: 5.0      # edge >= 5% 
+    medium: 3.0    # edge >= 3%
+    low: 2.0       # edge >= 2%
+  bankroll:
+    unit_size: 1.0  # percentage of bankroll per unit
+    max_units: 3    # max units on a single bet
+    kelly_fraction: 0.25  # quarter-Kelly for safety
+
+# Player prop categories
+player_props:
+  - passing_yards
+  - passing_touchdowns
+  - rushing_yards
+  - rushing_attempts
+  - receiving_yards
+  - receptions
+  - touchdowns_anytime
+  - interceptions
+
+# Schedule
+schedule:
+  pipeline_run_day: wednesday  # day to pull fresh data
+  prediction_run_day: thursday  # day to generate picks
+  update_day: sunday_morning    # final update with inactive/weather
+
+# Output
+output:
+  top_bets_count: 10  # how many "best bets" to surface
+  dashboard_port: 8501

@@ -1,0 +1,34 @@
+# Human Notes Template
+# Copy this file and rename to week_XX_notes.yaml (e.g. week_01_notes.yaml)
+# Add your qualitative insights for the model to incorporate
+# ============================================================
+
+season: 2026
+week: 1
+
+# Game-level notes (motivation, coaching, scheme changes)
+game_notes:
+  - game: "KC vs BAL"
+    notes: |
+      Example: Ravens installed new blitz packages in preseason.
+      Mahomes historically struggles against pressure up the middle.
+    confidence_adjustment: -0.5  # slight downgrade to KC spread confidence
+
+# Player-level notes (revenge games, contract situations, usage changes)
+player_notes:
+  - player: "Example Player"
+    team: "NYG"
+    notes: |
+      Pending contract extension, historically performs well in contract years.
+      New offensive coordinator running more 3-WR sets.
+    props_affected:
+      - receiving_yards: +5  # bump projection by 5 yards
+      - receptions: +1
+
+# Team-level notes (general observations)
+team_notes:
+  - team: "DET"
+    notes: |
+      O-line lost two starters. Run game may suffer early season.
+    props_affected:
+      - rushing_yards: -10  # team rushing projection haircut

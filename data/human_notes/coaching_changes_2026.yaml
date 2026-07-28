@@ -1,0 +1,191 @@
+# 2026 NFL Coaching Changes
+# Source: CBS Sports coordinator grades article
+# Impact: 21 new OCs + 14 new DCs = massive turnover
+# Our hypothesis: New coordinator = offensive adjustment period = UNDER early
+# 7 teams have completely new coaching staffs
+
+season: 2026
+
+# Key context: 65%+ of teams changed OCs. This is unprecedented turnover.
+# This means Week 1-4 UNDER signal should be EVEN STRONGER than historical average.
+
+new_head_coaches:
+  - team: BAL
+    hc: Jesse Minter
+    notes: "Defensive-minded, first-time HC. First-time play-caller on offense (Doyle)."
+  - team: BUF
+    hc: Joe Brady
+    notes: "First-time HC. Will call offensive plays. Jim Leonhard new DC."
+  - team: LV
+    hc: Klint Kubiak
+    notes: "From Seattle. First-time HC. Kirk Cousins familiar with system."
+  - team: MIA
+    hc: Jeff Hafley
+    notes: "Completely rebuilding. Malik Willis at QB. Major transition."
+  - team: PIT
+    hc: Mike McCarthy
+    notes: "From DAL. Offensive-minded. Patrick Graham at DC."
+  - team: TEN
+    hc: Robert Saleh
+    notes: "Defensive play-caller. Brian Daboll OC + Gus Bradley DC."
+  - team: NYJ
+    hc: Aaron Glenn
+    notes: "Defensive-minded. Will call defensive plays. Frank Reich OC."
+
+new_offensive_coordinators:
+  # HIGHEST IMPACT (first-time play-callers or major scheme changes)
+  - team: BAL
+    oc: Declan Doyle
+    notes: "29 years old. FIRST-TIME play-caller. Was Bears OC but Ben Johnson called plays."
+    play_caller: true
+    first_time: true
+    impact: "HIGH - entire offense learning new voice. UNDER early."
+    
+  - team: NYG
+    oc: Matt Nagy
+    notes: "Chiefs didn't let him call plays. Now gets control. Former Bears HC (34-31)."
+    play_caller: true
+    first_time: false
+    impact: "HIGH - new HC (Harbaugh), new OC, new QB (Jaxson Dart). Triple adjustment."
+    
+  - team: WAS
+    oc: David Blough
+    notes: "30 years old. Never called plays. Massive gamble. Jayden Daniels struggled in 2025."
+    play_caller: true
+    first_time: true
+    impact: "VERY HIGH - first-time caller + team went 5-12 last year. UNDER early."
+    
+  - team: MIA
+    oc: Bobby Slowik
+    notes: "Was Texans OC (fired). Now with Willis at QB. Major downgrade at QB."
+    play_caller: true
+    first_time: false
+    impact: "HIGH - new system + limited QB. Strong UNDER."
+    
+  - team: NYJ
+    oc: Frank Reich
+    notes: "Former HC (Panthers, Colts). Experienced but new system for Geno Smith."
+    play_caller: true
+    first_time: false
+    impact: "MEDIUM - Reich is experienced but Geno had 17 INTs last year."
+    
+  - team: LAC
+    oc: Mike McDaniel
+    notes: "Former Dolphins HC. A+ grade. Elite schemer. Herbert + Achane + Hampton."
+    play_caller: true
+    first_time: false
+    impact: "LOW - McDaniel is elite. This offense may OVER-perform early."
+
+  # MEDIUM IMPACT (play-caller stays same or HC calls plays)
+  - team: DEN
+    oc: Davis Webb
+    notes: "Internal promotion. May take play-calling from Payton."
+    play_caller: "maybe"
+    impact: "LOW - continuity. Webb was already there."
+    
+  - team: BUF
+    oc: Pete Carmichael Jr.
+    notes: "Brady still calls plays. Carmichael is experienced support."
+    play_caller: false
+    impact: "LOW - Brady calls plays. But DJ Moore is new."
+    
+  - team: KC
+    oc: Eric Bieniemy
+    notes: "Reunion with Mahomes. Trying to recapture old magic."
+    play_caller: false  # Reid calls plays
+    impact: "LOW - Reid still in charge. Bieniemy manages."
+    
+  - team: PHI
+    oc: Sean Mannion
+    notes: "33 years old. Former QB. First year as OC. A.J. Brown gone."
+    play_caller: true
+    first_time: true
+    impact: "HIGH - lost AJ Brown, new play-caller, rookie Lemon as WR2."
+    
+  - team: TB
+    oc: Zac Robinson
+    notes: "From Falcons. Knows NFC South defenses. Baker Mayfield connection."
+    play_caller: true
+    first_time: false
+    impact: "MEDIUM - new system but Robinson is experienced."
+    
+  - team: TEN
+    oc: Brian Daboll
+    notes: "Former Bills OC, Giants HC. Working with Cam Ward."
+    play_caller: true
+    first_time: false
+    impact: "MEDIUM - Daboll is experienced but all-new offense."
+
+new_defensive_coordinators:
+  - team: BAL
+    dc: Anthony Weaver
+    notes: "A+ grade. Best available DC. From Dolphins."
+    impact: "Opposing offenses may struggle. UNDER for teams facing BAL."
+    
+  - team: BUF
+    dc: Jim Leonhard
+    notes: "From Broncos. Helped Surtain win DPOY."
+    impact: "Strong hire. BUF defense should improve."
+    
+  - team: CLE
+    dc: Mike Rutenberg
+    notes: "First-time DC. From Jets staff."
+    impact: "Uncertainty. CLE defense could be inconsistent early."
+    
+  - team: DAL
+    dc: Christian Parker
+    notes: "From Eagles. Young (34). Brings Vic Fangio concepts."
+    impact: "New scheme for Cowboys D. Adjustment period."
+    
+  - team: GB
+    dc: Jonathan Gannon
+    notes: "Former Cardinals HC. Was Eagles DC in Super Bowl run."
+    impact: "Top hire. GB defense should be much better."
+    
+  - team: LV
+    dc: Rob Leonard
+    notes: "First-time DC. Internal promotion. Maxx Crosby connection."
+    impact: "First-time caller = uncertainty."
+    
+  - team: PIT
+    dc: Patrick Graham
+    notes: "Experienced. Was Giants/Dolphins/Raiders DC."
+    impact: "Steady hand. PIT defense stays strong."
+    
+  - team: SF
+    dc: Raheem Morris
+    notes: "Former Falcons HC, Rams DC. A grade."
+    impact: "Big upgrade. SF defense should be elite."
+
+# TEAMS WITH MOST DISRUPTION (target for early UNDER)
+highest_disruption_teams:
+  - team: MIA
+    reason: "New HC (Hafley), new OC (Slowik), new QB (Willis). Complete rebuild."
+    under_confidence: "VERY HIGH"
+  - team: WAS
+    reason: "Kept HC but new OC (first-time, 30yo). Went 5-12. Daniels struggled."
+    under_confidence: "HIGH"
+  - team: NYG
+    reason: "New HC (Harbaugh), new OC (Nagy), rookie QB (Dart). Triple new."
+    under_confidence: "HIGH"
+  - team: BAL
+    reason: "New HC (Minter), first-time OC play-caller (Doyle, 29yo)."
+    under_confidence: "HIGH"
+  - team: NYJ
+    reason: "New HC (Glenn), new OC (Reich), Geno Smith (17 INTs)."
+    under_confidence: "HIGH"
+  - team: LV
+    reason: "New HC (Kubiak), new OC (first-time), new QB (Cousins/Mendoza)."
+    under_confidence: "MEDIUM-HIGH"
+  - team: TEN
+    reason: "New HC (Saleh), new OC (Daboll), all new staff."
+    under_confidence: "MEDIUM"
+
+# TEAMS LIKELY TO OVER-PERFORM (continuity or elite new hires)
+over_candidates:
+  - team: LAC
+    reason: "McDaniel A+ OC hire. Herbert + elite RBs. Scheme upgrade."
+  - team: SF
+    reason: "Morris A grade DC. Offensive continuity under Shanahan."
+  - team: GB
+    reason: "Gannon A- DC. Offense stays same (LaFleur calls plays)."
