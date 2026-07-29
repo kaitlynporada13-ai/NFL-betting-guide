@@ -107,6 +107,8 @@ query = st.text_input(
     label_visibility="collapsed",
 )
 
+st.caption("Try: player names (bankable/avoid check) • 'week 1' • 'dome' • 'cold' • 'wind' • 'monday' • 'division' • 'injury' • 'new team' • 'boom'")
+
 if query:
     query_lower = query.lower()
     
