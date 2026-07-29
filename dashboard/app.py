@@ -34,7 +34,8 @@ st.markdown("""
     
     /* Hide the top-right deploy/share buttons */
     .stDeployButton { display: none; }
-    header { visibility: hidden; height: 0; }
+    [data-testid="stToolbar"] { display: none; }
+    header [data-testid="stDecoration"] { display: none; }
     
     /* Metric cards */
     [data-testid="stMetric"] {
