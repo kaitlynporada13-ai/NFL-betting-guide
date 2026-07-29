@@ -21,8 +21,8 @@ st.set_page_config(
 # Hide default sidebar nav + streamlit branding for cleaner mobile feel
 st.markdown("""
 <style>
-    /* Tighter padding for mobile */
-    .block-container { padding: 1rem 1rem 4rem 1rem; max-width: 100%; }
+    /* Push content below Streamlit's header */
+    .block-container { padding: 2.5rem 1rem 4rem 1rem; max-width: 100%; }
     
     /* Smaller headers for mobile */
     h1 { font-size: 1.5rem !important; margin-bottom: 0.3rem !important; }
@@ -31,6 +31,10 @@ st.markdown("""
     
     /* Hide streamlit footer */
     footer { visibility: hidden; }
+    
+    /* Hide the top-right deploy/share buttons */
+    .stDeployButton { display: none; }
+    header { visibility: hidden; height: 0; }
     
     /* Metric cards */
     [data-testid="stMetric"] {
@@ -218,5 +222,5 @@ if preseason:
             st.markdown(f"- **{name}** → {team} (from {old})")
 
 st.markdown("---")
-st.caption("☰ Tap the arrow in the top-left to navigate pages")
+st.caption("☰ Open sidebar from the top-left menu to navigate pages")
 st.caption("Pages: Best Bets • Team Props • Pass Yds • Rec Yds • Receptions • Rush Yds • TDs • Tracker • Research • Player Intel")
