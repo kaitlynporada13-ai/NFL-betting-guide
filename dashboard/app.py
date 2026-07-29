@@ -107,72 +107,13 @@ query = st.text_input(
     label_visibility="collapsed",
 )
 
-st.caption("Try: player names (bankable/avoid check) • 'week 1' • 'dome' • 'cold' • 'wind' • 'monday' • 'division' • 'injury' • 'new team' • 'boom'")
+st.caption("Try: player names • 'Mahomes vs Bills' • 'AJ Brown dome' • 'Barkley cold' • 'Kelce man zone' • 'Henry last 5' • 'Hurts without Brown' • 'Cowboys defense scheme' • 'week 1' • 'injury'")
 
 if query:
-    query_lower = query.lower()
-    
-    # Search bankable/avoid lists
-    bankable_path = PROC_DIR / "bankable_players.parquet"
-    avoid_path = PROC_DIR / "avoid_players.parquet"
-    
-    found = False
-    
-    if bankable_path.exists():
-        bankable = pd.read_parquet(bankable_path)
-        match = bankable[bankable["player_clean"].str.contains(query_lower, na=False)]
-        if not match.empty:
-            row = match.iloc[0]
-            st.success(f"✅ **{row['player_clean'].title()}** is on our BANKABLE list")
-            st.markdown(f"- Hit rate: **{row['hit_rate']:.1%}** | ROI: **{row['roi']:+.1f}%** | Bets: {row['total_bets']}")
-            st.markdown(f"- Primary market: {row['markets']}")
-            st.markdown("- **Action:** Size up when our strategy triggers on this player")
-            found = True
-    
-    if not found and avoid_path.exists():
-        avoid = pd.read_parquet(avoid_path)
-        match = avoid[avoid["player_clean"].str.contains(query_lower, na=False)]
-        if not match.empty:
-            row = match.iloc[0]
-            st.error(f"🚫 **{row['player_clean'].title()}** is on our AVOID list")
-            st.markdown(f"- Hit rate: **{row['hit_rate']:.1%}** | ROI: **{row['roi']:+.1f}%** | Bets: {row['total_bets']}")
-            st.markdown("- **Action:** Skip or reduce size. FanDuel prices them accurately.")
-            found = True
-    
-    # Check preseason notes
-    if not found:
-        preseason = load_preseason()
-        if preseason:
-            for player in preseason.get("new_team_players", []):
-                if query_lower in player.get("player", "").lower():
-                    st.info(f"🔄 **{player['player']}** — New team player ({player['old_team']} → {player['new_team']})")
-                    st.markdown(player.get("notes", ""))
-                    st.markdown("**Our finding:** New team + weeks 1-4 = UNDER (55.2% hit)")
-                    found = True
-                    break
-    
-    # Strategy lookups
-    if not found:
-        strategies = {
-            "week 1": "🔴 **Week 1 Strategy:** SLAM UNDER on everything. Pass TDs UNDER hits 75.8%. Pass yards UNDER hits 70.6%. This is our single biggest edge of the entire year. Confirmed 3/3 seasons.",
-            "dome": "🏟️ **Dome Games:** Pass TDs OVER at plus money (+150+) is +EV ($25 per $100 bet). FanDuel underestimates indoor TD rates. Hit rate: 45.9% vs 36.9% implied.",
-            "cold": "🥶 **Cold Games:** Rush OVER (54.5% hit). Cold suppresses passing → game scripts go run-heavy. Also: Rec UNDER + outdoor + cold hits 56.1%.",
-            "wind": "💨 **Windy Games:** Pass props UNDER (55.7% hit). Wind >=15mph suppresses passing. Confirmed 2/3 seasons.",
-            "monday": "🌙 **Monday Night:** UNDER lean (53.5% hit, 3/3 seasons). MNF historically lower-scoring. Small but rock-steady edge.",
-            "division": "🏈 **Division Games:** General UNDER lean. Familiarity = tighter games. Rec UNDER + division + outdoor hits 57.4%.",
-            "injury": "🏥 **High Injury Games:** When both teams have 4+ players out + outdoor: UNDER hits 63.2% (+20.6% ROI). Massive edge.",
-            "new team": "🔄 **New Team Players:** UNDER weeks 1-4 hits 55.2%. No chemistry yet. Confirmed finding.",
-            "boom": "📈 **After Boom Game:** Rush UNDER hits 54.8%, Receptions UNDER hits 54.3%. FanDuel raises the line after a big game but regression is more powerful.",
-        }
-        
-        for keyword, response in strategies.items():
-            if keyword in query_lower:
-                st.markdown(response)
-                found = True
-                break
-    
-    if not found:
-        st.caption(f"No specific data found for '{query}'. Try a player name or keyword like 'dome', 'cold', 'week 1', 'injury'.")
+    from dashboard.query_engine import process_query
+    result = process_query(query)
+    if result:
+        st.markdown(result)
 
 st.markdown("---")
 
