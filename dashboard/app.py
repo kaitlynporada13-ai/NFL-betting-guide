@@ -21,36 +21,8 @@ st.set_page_config(
 # Hide default sidebar nav + streamlit branding for cleaner mobile feel
 st.markdown("""
 <style>
-    /* Hide sidebar toggle */
-    [data-testid="collapsedControl"] { display: none; }
-    
     /* Tighter padding for mobile */
-    .block-container { padding: 0.5rem 1rem 4rem 1rem; max-width: 100%; }
-    
-    /* Nav bar styling */
-    .nav-bar {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        background: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 8px 0;
-        margin: -0.5rem -1rem 1rem -1rem;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-    }
-    .nav-item {
-        text-align: center;
-        font-size: 0.7rem;
-        color: #555;
-        text-decoration: none;
-        padding: 4px 8px;
-    }
-    .nav-item.active {
-        color: #1f77b4;
-        font-weight: bold;
-    }
+    .block-container { padding: 1rem 1rem 4rem 1rem; max-width: 100%; }
     
     /* Smaller headers for mobile */
     h1 { font-size: 1.5rem !important; margin-bottom: 0.3rem !important; }
@@ -83,20 +55,6 @@ def load_preseason():
             return yaml.safe_load(f)
     return None
 
-
-# ===== NAVIGATION =====
-st.markdown("""
-<div class="nav-bar">
-    <span class="nav-item active">🏠 Home</span>
-    <span class="nav-item">💰 Bets</span>
-    <span class="nav-item">🏟️ Teams</span>
-    <span class="nav-item">🎯 Props</span>
-    <span class="nav-item">📊 Track</span>
-    <span class="nav-item">🔬 Intel</span>
-</div>
-""", unsafe_allow_html=True)
-
-st.caption("Use the sidebar (swipe right) to navigate between pages")
 
 # ===== HEADER =====
 st.markdown("## 🏈 NFL Props")
@@ -260,4 +218,5 @@ if preseason:
             st.markdown(f"- **{name}** → {team} (from {old})")
 
 st.markdown("---")
-st.caption("Swipe right for full navigation • Built on 63K backtested FanDuel props")
+st.caption("☰ Tap the arrow in the top-left to navigate pages")
+st.caption("Pages: Best Bets • Team Props • Pass Yds • Rec Yds • Receptions • Rush Yds • TDs • Tracker • Research • Player Intel")
