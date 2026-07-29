@@ -674,3 +674,89 @@ def process_query(query: str) -> str:
     
     # Default: last 5 games
     return query_player_last_n(player_name, name_col, 5, stats_df, stat_focus)
+
+
+# ================================================================
+# STATMUSE API FALLBACK (for complex questions)
+# ================================================================
+
+PARSE_API_KEY = "pmx_c5f09ac5dafd61ed894fc1adcfa26bd0"
+STATMUSE_BASE = "https://api.parse.bot/scraper/6546515f-73d6-44cc-b3e2-2cafc0b022b1"
+
+
+def query_statmuse(question: str) -> str:
+    """
+    Send a natural language question to StatMuse via Parse API.
+    Handles complex questions our local engine can't answer.
+    Cost: 1-2 credits per call.
+    """
+    import requests
+    
+    headers = {"X-API-Key": PARSE_API_KEY}
+    
+    # Try the 'ask' endpoint first (most flexible, 2 credits)
+    try:
+        r = requests.get(
+            f"{STATMUSE_BASE}/ask",
+            headers=headers,
+            params={"query": question},
+            timeout=15,
+        )
+        if r.status_code == 200:
+            data = r.json().get("data", {})
+            answer = data.get("answer", "")
+            tables = data.get("tables", [])
+            url = data.get("url", "")
+            
+            lines = []
+            if answer:
+                lines.append(f"**{answer}**")
+            
+            # Format table data
+            if tables:
+                for table in tables[:2]:  # Max 2 tables
+                    rows = table.get("rows", [])
+                    if rows:
+                        lines.append(f"\n*{table.get('title', 'Stats')}:*")
+                        # Show up to 8 rows
+                        for row in rows[:8]:
+                            parts = []
+                            for k, v in row.items():
+                                if k not in ["NAME"] and v:
+                                    parts.append(f"{k}: {v}")
+                            if parts:
+                                lines.append(f"  {'  |  '.join(parts[:6])}")
+            
+            if url:
+                lines.append(f"\n[View on StatMuse]({url})")
+            
+            if lines:
+                return "\n".join(lines)
+            return "StatMuse returned no results for that question."
+        else:
+            return f"StatMuse query failed (status {r.status_code}). Try rephrasing."
+    except Exception as e:
+        return f"StatMuse connection error: {str(e)[:100]}"
+
+
+def process_query_with_fallback(query: str) -> tuple[str, str]:
+    """
+    Process query with local engine first, StatMuse fallback.
+    Returns (result, source) where source is 'local' or 'statmuse'.
+    """
+    # Try local engine first
+    result = process_query(query)
+    
+    # If local engine couldn't find anything meaningful, try StatMuse
+    if result and ("Couldn't find" in result or "not loaded" in result or "No data found" in result):
+        sm_result = query_statmuse(query)
+        if sm_result and "failed" not in sm_result.lower():
+            return sm_result, "statmuse"
+    
+    # If local returned something, use it
+    if result:
+        return result, "local"
+    
+    # Nothing local, try StatMuse
+    sm_result = query_statmuse(query)
+    return sm_result, "statmuse"

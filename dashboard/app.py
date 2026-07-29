@@ -107,13 +107,18 @@ query = st.text_input(
     label_visibility="collapsed",
 )
 
-st.caption("Try: player names • 'Mahomes vs Bills' • 'AJ Brown dome' • 'Barkley cold' • 'Kelce man zone' • 'Henry last 5' • 'Hurts without Brown' • 'Cowboys defense scheme' • 'week 1' • 'injury'")
+st.caption("Ask anything: 'Mahomes vs Bills' • 'AJ Brown dome games' • 'Kelce man zone' • 'Henry last 5' • 'Hurts without Brown' • 'Cowboys defense' • Any natural language sports question")
 
 if query:
-    from dashboard.query_engine import process_query
-    result = process_query(query)
+    from dashboard.query_engine import process_query_with_fallback
+    with st.spinner("Looking up..."):
+        result, source = process_query_with_fallback(query)
     if result:
         st.markdown(result)
+        if source == "statmuse":
+            st.caption("📡 Answer from StatMuse (1 credit used)")
+        else:
+            st.caption("💾 Answer from local data")
 
 st.markdown("---")
 
