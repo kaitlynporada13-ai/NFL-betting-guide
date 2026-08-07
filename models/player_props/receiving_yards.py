@@ -28,9 +28,14 @@ class ReceivingYardsModel(BaseModel):
             # Consistency
             "receiving_yards_std5", "receiving_yards_std10",
             "receiving_yards_max5", "receiving_yards_min5",
-            # Efficiency
+            # Air yards profile (new)
+            "avg_air_yards", "avg_yac", "deep_rate",
+            # Red zone involvement (new)
+            "rz_targets", "rz_target_share",
+            # Snap count stability (new)
+            "snap_pct_roll3", "snap_pct_roll5",
             # Situational
-            "game_in_dome", "game_on_grass",
+            "game_in_dome", "game_on_grass", "is_division_game",
             "rest_differential", "tz_travel",
             # Weather (wind/rain suppresses deep passing)
             "pass_suppression",

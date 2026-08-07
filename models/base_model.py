@@ -84,8 +84,8 @@ class BaseModel(ABC):
         self.feature_columns = self.get_features(data)
         target = self.get_target(data)
 
-        # Filter to rows where we have both features and target
-        valid_mask = target.notna() & data[self.feature_columns].notna().all(axis=1)
+        # Filter to rows where we have the target (features can have NaN — filled below)
+        valid_mask = target.notna()
         X = data.loc[valid_mask, self.feature_columns].copy()
         y = target[valid_mask]
 

@@ -449,6 +449,8 @@ def build_player_prop_features(
 ) -> pd.DataFrame:
     """
     Master function to build all player-prop features.
+    Incorporates: rolling stats, matchups, situational context,
+    red zone features, air yards, snap counts, QB pressure.
     """
     print("[features] Building player-prop features...")
 
@@ -465,11 +467,135 @@ def build_player_prop_features(
     player_features = player_features.merge(
         game_sit[["season", "week", "home_team", "away_team",
                   "game_in_dome", "game_on_grass", "high_altitude",
-                  "rest_differential", "tz_travel"]].drop_duplicates(),
+                  "rest_differential", "tz_travel", "is_division_game"]].drop_duplicates(),
         left_on=["season", "week", "recent_team"],
         right_on=["season", "week", "home_team"],
         how="left",
     )
+
+    # 4. Merge red zone features (team-level RZ opportunity)
+    proc_dir = get_data_dir("processed")
+    rz_path = proc_dir / "redzone_features.parquet"
+    if rz_path.exists():
+        rz = pd.read_parquet(rz_path)
+        rz_cols = ["season", "week", "team", "rz_td_pct_roll5", "rz_pass_rate_roll5",
+                   "rz_trips_roll5", "rz_tds_roll5"]
+        rz_avail = [c for c in rz_cols if c in rz.columns]
+        player_features = player_features.merge(
+            rz[rz_avail].drop_duplicates(),
+            left_on=["season", "week", "recent_team"],
+            right_on=["season", "week", "team"],
+            how="left",
+        )
+        if "team" in player_features.columns:
+            player_features.drop(columns=["team"], inplace=True, errors="ignore")
+        print("  ✓ Red zone features (team-level)")
+
+    # 5. Merge player red zone targets
+    player_rz_path = proc_dir / "player_redzone_targets.parquet"
+    if player_rz_path.exists():
+        player_rz = pd.read_parquet(player_rz_path)
+        if "receiver_player_name" in player_rz.columns:
+            player_rz = player_rz.rename(columns={"receiver_player_name": "player_name"})
+        rz_player_cols = ["player_name", "rz_targets", "rz_tds", "rz_target_share"]
+        rz_player_avail = [c for c in rz_player_cols if c in player_rz.columns]
+        if rz_player_avail:
+            # This is a season-level profile, merge on player name
+            name_col = "player_display_name" if "player_display_name" in player_features.columns else "player_name"
+            player_features = player_features.merge(
+                player_rz[rz_player_avail].drop_duplicates(subset=["player_name"]),
+                left_on=name_col,
+                right_on="player_name",
+                how="left",
+                suffixes=("", "_rz"),
+            )
+            print("  ✓ Player red zone targets")
+
+    # 6. Merge air yards profile
+    air_path = proc_dir / "player_air_yards_profile.parquet"
+    if air_path.exists():
+        air = pd.read_parquet(air_path)
+        if "receiver_player_name" in air.columns:
+            air = air.rename(columns={"receiver_player_name": "player_name"})
+        air_cols = ["player_name", "avg_air_yards", "avg_yac", "deep_rate"]
+        air_avail = [c for c in air_cols if c in air.columns]
+        if air_avail:
+            name_col = "player_display_name" if "player_display_name" in player_features.columns else "player_name"
+            player_features = player_features.merge(
+                air[air_avail].drop_duplicates(subset=["player_name"]),
+                left_on=name_col,
+                right_on="player_name",
+                how="left",
+                suffixes=("", "_air"),
+            )
+            print("  ✓ Air yards profile (depth, YAC)")
+
+    # 7. Merge QB pressure profile
+    qbp_path = proc_dir / "qb_pressure_profile.parquet"
+    if qbp_path.exists():
+        qbp = pd.read_parquet(qbp_path)
+        if "passer_player_name" in qbp.columns:
+            qbp = qbp.rename(columns={"passer_player_name": "player_name"})
+        qbp_cols = ["player_name", "sack_rate", "hit_rate"]
+        qbp_avail = [c for c in qbp_cols if c in qbp.columns]
+        if qbp_avail:
+            name_col = "player_display_name" if "player_display_name" in player_features.columns else "player_name"
+            player_features = player_features.merge(
+                qbp[qbp_avail].drop_duplicates(subset=["player_name"]),
+                left_on=name_col,
+                right_on="player_name",
+                how="left",
+                suffixes=("", "_pressure"),
+            )
+            print("  ✓ QB pressure profile")
+
+    # 8. Merge snap count data (workload stability)
+    raw_dir = get_data_dir("raw")
+    snap_path = raw_dir / "snap_counts.parquet"
+    if snap_path.exists():
+        snaps = pd.read_parquet(snap_path)
+        # Build rolling snap% for each player
+        snaps = snaps.sort_values(["player", "season", "week"])
+        snaps["snap_pct_roll3"] = (
+            snaps.groupby("player")["offense_pct"]
+            .transform(lambda x: x.rolling(3, min_periods=1).mean())
+        )
+        snaps["snap_pct_roll5"] = (
+            snaps.groupby("player")["offense_pct"]
+            .transform(lambda x: x.rolling(5, min_periods=1).mean())
+        )
+        snap_features = snaps[["player", "season", "week", "offense_pct",
+                               "snap_pct_roll3", "snap_pct_roll5"]].drop_duplicates()
+        # Merge on player name + season + week
+        name_col = "player_display_name" if "player_display_name" in player_features.columns else "player_name"
+        player_features = player_features.merge(
+            snap_features,
+            left_on=[name_col, "season", "week"],
+            right_on=["player", "season", "week"],
+            how="left",
+        )
+        if "player" in player_features.columns and "player" != name_col:
+            player_features.drop(columns=["player"], inplace=True, errors="ignore")
+        print("  ✓ Snap count features (workload stability)")
+
+    # 9. Merge goal-line carries (for RBs/TD model)
+    gl_path = proc_dir / "player_goalline_carries.parquet"
+    if gl_path.exists():
+        gl = pd.read_parquet(gl_path)
+        if "rusher_player_name" in gl.columns:
+            gl = gl.rename(columns={"rusher_player_name": "player_name"})
+        gl_cols = ["player_name", "gl_carries", "gl_tds"]
+        gl_avail = [c for c in gl_cols if c in gl.columns]
+        if gl_avail:
+            name_col = "player_display_name" if "player_display_name" in player_features.columns else "player_name"
+            player_features = player_features.merge(
+                gl[gl_avail].drop_duplicates(subset=["player_name"]),
+                left_on=name_col,
+                right_on="player_name",
+                how="left",
+                suffixes=("", "_gl"),
+            )
+            print("  ✓ Goal-line carries")
 
     print(f"  Final feature set: {player_features.shape[1]} columns, {len(player_features)} rows")
     return player_features

@@ -29,9 +29,15 @@ class PassingYardsModel(BaseModel):
             "passing_yards_max5", "passing_yards_min5",
             # Situational (from merged game features)
             "game_in_dome", "game_on_grass", "high_altitude",
-            "rest_differential", "tz_travel",
+            "rest_differential", "tz_travel", "is_division_game",
             # Weather impact on passing
             "pass_suppression",
+            # QB pressure profile (new)
+            "sack_rate", "hit_rate",
+            # Snap count stability (new)
+            "snap_pct_roll3", "snap_pct_roll5",
+            # Red zone context (team-level, correlates with volume)
+            "rz_td_pct_roll5", "rz_pass_rate_roll5",
         ]
         return [f for f in feature_patterns if f in df.columns]
 

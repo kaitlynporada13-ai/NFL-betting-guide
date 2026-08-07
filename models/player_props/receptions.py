@@ -27,8 +27,12 @@ class ReceptionsModel(BaseModel):
             # Consistency
             "receptions_std5", "receptions_std10",
             "receptions_max5", "receptions_min5",
+            # Air yards / route type (new)
+            "avg_air_yards", "avg_yac", "deep_rate",
+            # Snap count stability (new)
+            "snap_pct_roll3", "snap_pct_roll5",
             # Situational
-            "game_in_dome", "rest_differential",
+            "game_in_dome", "rest_differential", "is_division_game",
             # Weather
             "pass_suppression",
         ]

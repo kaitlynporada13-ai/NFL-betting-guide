@@ -27,10 +27,16 @@ class AnytimeTDModel(BaseModel):
             "rushing_yards_roll5", "receiving_yards_roll5",
             # Red zone proxy (TDs correlate with yards)
             "rushing_yards_roll3", "receiving_yards_roll3",
+            # Red zone features (new — direct TD opportunity)
+            "rz_targets", "rz_tds", "rz_target_share",
+            "gl_carries", "gl_tds",
+            "rz_td_pct_roll5", "rz_trips_roll5",
             # Target share
             "target_share_roll5",
+            # Snap count (new)
+            "snap_pct_roll3", "snap_pct_roll5",
             # Situational
-            "game_in_dome", "high_altitude",
+            "game_in_dome", "high_altitude", "is_division_game",
             # Weather (dome games = more passing TDs)
             "pass_suppression",
         ]

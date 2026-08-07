@@ -29,9 +29,13 @@ class RushingYardsModel(BaseModel):
             "rushing_yards_max5", "rushing_yards_min5",
             # Game script indicators (teams ahead rush more)
             "passing_yards_roll5",  # team passing volume context
+            # Goal-line carries (new)
+            "gl_carries", "gl_tds",
+            # Snap count stability (new)
+            "snap_pct_roll3", "snap_pct_roll5",
             # Situational
             "game_in_dome", "game_on_grass", "high_altitude",
-            "rest_differential",
+            "rest_differential", "is_division_game",
             # Weather (bad weather = more rushing)
             "rush_boost", "pass_suppression",
         ]
