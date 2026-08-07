@@ -1,0 +1,324 @@
+# Season-Long Props Analysis — FanDuel 2026-27
+# Captured: 2026-08-07
+# All lines at -114/-114 unless noted
+# Analysis incorporates: historical production, SOS, coaching changes,
+# contract year, new team adjustments, injury status
+# ====================================================================
+
+season: 2026
+captured_date: "2026-08-07"
+source: "FanDuel Sportsbook (NJ)"
+
+# ====================================================================
+# BEST BETS — Highest conviction plays
+# ====================================================================
+best_bets:
+  - player: "Drake Maye"
+    market: pass_yards
+    line: 3750.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Threw 4,394 yards + 31 TDs in 2025 (year 2 breakout). Line is 650 yards
+      BELOW last season. A.J. Brown arrived (upgrade at WR). Same system, year 3.
+      This is the best value on the board.
+    historical: "4,394 yards in 2025 (17 games)"
+    edge_estimate: "+644 yards (+17%)"
+
+  - player: "Ja'Marr Chase"
+    market: rec_yards
+    line: 1325.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Contract year + CIN easiest schedule (#2) + Burrow healthy + elite talent.
+      Had 1,700+ in 2024. Even a slight regression clears 1325 easily.
+    historical: "1,700+ in 2024, 1,000+ every healthy season"
+    edge_estimate: "+250 yards (+19%)"
+
+  - player: "Lamar Jackson"
+    market: rush_yards
+    line: 525.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Consistently 700-900 rush yards/season throughout career. 525 is way too
+      low even with BAL coaching disruption. He's rushed for 750+ in 5 of last 6 seasons.
+    historical: "764 in 2025, 915 in 2024, 821 in 2023"
+    edge_estimate: "+250 yards (+48%)"
+
+  - player: "Sam Darnold"
+    market: pass_yards
+    line: 3600.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Threw 4,048 in 2025 with Seattle. Won Super Bowl 60. Same team, same system,
+      entering year 2 in SEA. 3600 is 450 below last season. Continuity play.
+    historical: "4,048 yards in 2025 (Super Bowl winner)"
+    edge_estimate: "+448 yards (+12%)"
+
+  - player: "Jalen Hurts"
+    market: rush_yards
+    line: 400.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Averages 600-800 rush yards/season. Has exceeded 400 in every full season.
+      Even with PHI's run-first approach limiting designed runs, scrambles alone
+      should get him past 400. Easiest rush prop on the board.
+    historical: "695 in 2025, 605 in 2024, 800+ in 2023"
+    edge_estimate: "+250 yards (+62%)"
+
+# ====================================================================
+# STRONG LEANS — Good value, high confidence
+# ====================================================================
+strong_leans:
+  - player: "Joe Burrow"
+    market: pass_yards
+    line: 3900.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Healthy, easiest schedule (#2), same system, elite weapons (Chase + Higgins).
+      Threw 4,000+ when healthy in previous years. Only risk is injury.
+    historical: "4,000+ in healthy seasons"
+    edge_estimate: "+300 yards"
+
+  - player: "Jared Goff"
+    market: pass_yards
+    line: 4050.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Easiest schedule (#1), continuity, elite DET offense. Threw 4,500+ in 2024.
+      Even slight regression still clears 4050.
+    historical: "4,500+ in 2024"
+    edge_estimate: "+300 yards"
+
+  - player: "Amon-Ra St. Brown"
+    market: rec_yards
+    line: 1225.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Contract year + easiest schedule (#1) + Goff continuity. High-floor slot
+      player who consistently produces. Had 1,161 in 2024 with some injuries.
+    historical: "1,161 in 2024, 1,500+ pace when healthy"
+    edge_estimate: "+150 yards"
+
+  - player: "Tee Higgins"
+    market: rec_yards
+    line: 875.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Contract year + CIN easiest schedule (#2) + Burrow healthy. When healthy,
+      Higgins is a 1,000-yard receiver. 875 is conservatively set (injury risk priced in).
+    historical: "1,000+ in 2022, 2023 when healthy"
+    edge_estimate: "+200 yards"
+
+  - player: "Ladd McConkey"
+    market: rec_yards
+    line: 875.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Year 2 + Mike McDaniel as new OC (A+ grade hire). Herbert + elite scheme
+      upgrade. McDaniel made Tyreek/Waddle elite in MIA. McConkey is the beneficiary.
+    historical: "Rookie year ~800 yards with weaker scheme"
+    edge_estimate: "+200 yards"
+
+  - player: "Josh Allen"
+    market: rush_yards
+    line: 500.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Averaged 500-700 rush yards/season. Has exceeded 500 in 4 of last 5 seasons.
+      Even at age 30, his rushing floor is around 500.
+    historical: "531 in 2025, 631 in 2024, 524 in 2023"
+    edge_estimate: "+100 yards"
+
+  - player: "Saquon Barkley"
+    market: rush_yards
+    line: 1050.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Had 2,000+ in 2024. Even with regression, PHI's offensive line keeps him
+      as a top-3 RB. 1050 is very conservative for Barkley.
+    historical: "2,000+ in 2024, 1,300+ in other healthy seasons"
+    edge_estimate: "+250 yards"
+
+  - player: "Tyler Shough"
+    market: pass_yards
+    line: 3450.5
+    direction: OVER
+    confidence: LEAN
+    reasoning: |
+      Won Offensive Rookie of the Year with Saints. Had 2,384 in 11 games
+      (217/game pace = 3,689 over 17 games). Line is below his per-game pace.
+      Year 2 jump expected.
+    historical: "2,384 yards in 11 games (2025 rookie year)"
+    edge_estimate: "+200 yards"
+
+  - player: "Brock Bowers"
+    market: rec_yards
+    line: 900.5
+    direction: OVER
+    confidence: STRONG
+    reasoning: |
+      Historic rookie year (112 catches, 1,000+ yards). Cousins/Mendoza will
+      lean on the TE. 900 is below his 2025 production.
+    historical: "1,000+ as a rookie in 2025"
+    edge_estimate: "+100 yards"
+
+  - player: "Drake Maye"
+    market: pass_tds
+    line: 25.5
+    direction: OVER
+    confidence: LEAN
+    over_price: -144
+    under_price: 108
+    reasoning: |
+      Threw 31 TDs in 2025. Line is 5.5 below last year. Juice is heavy toward
+      over (-144) so less value, but still directionally correct.
+    historical: "31 TDs in 2025"
+    edge_estimate: "+5 TDs"
+
+# ====================================================================
+# UNDER PLAYS
+# ====================================================================
+under_plays:
+  - player: "Malik Willis"
+    market: pass_yards
+    line: 2925.5
+    direction: UNDER
+    confidence: STRONG
+    reasoning: |
+      Never been a full-time NFL starter. MIA complete rebuild (new HC Hafley,
+      new OC Slowik). 2925 implies 172 yards/game for 17 games — very generous
+      for a player with ~4 career starts. SLAM UNDER.
+    historical: "Minimal NFL starting experience"
+    edge_estimate: "-500+ yards"
+
+  - player: "Fernando Mendoza"
+    market: pass_yards
+    line: 2300.5
+    direction: UNDER
+    confidence: LEAN
+    reasoning: |
+      TRUE ROOKIE (2026 #1 overall pick from Indiana). Kirk Cousins may start
+      early games. Even if Mendoza starts all 17, rookie QBs rarely average
+      135+ yards/game. Line is low but still generous for a rookie.
+    historical: "No NFL experience"
+    edge_estimate: "-200 yards"
+
+  - player: "Cam Ward"
+    market: pass_yards
+    line: 3250.5
+    direction: UNDER
+    confidence: LEAN
+    reasoning: |
+      Terrible rookie year (59.8% comp, 80.2 rating in 2025). New OC Daboll
+      should help but 3250 assumes 191/game — above his 2025 pace.
+      Year 2 QBs can improve but his floor was very low.
+    historical: "Poor 2025 rookie stats"
+    edge_estimate: "-200 yards"
+
+  - player: "Rashee Rice"
+    market: rec_yards
+    line: 975.5
+    direction: UNDER
+    confidence: LEAN
+    reasoning: |
+      KC but ramping up from offseason knee surgery + 30-day jail sentence for
+      probation violation. Missed all OTAs and minicamp. On extended ramp-up plan.
+      May miss early games or be limited. 975 assumes full healthy season.
+    historical: "Had ~900 yards in partial 2024 before injury"
+    edge_estimate: "-100 yards (injury/availability risk)"
+
+  - player: "Carnell Tate"
+    market: rec_yards
+    line: 775.5
+    direction: UNDER
+    confidence: LEAN
+    reasoning: |
+      TRUE ROOKIE (2026 #4 pick, TEN). Paired with year-2 QB Cam Ward who had a
+      terrible rookie season (59.8% comp). TEN is a high-disruption team with all-new
+      coaching staff. Rookie WR + bad sophomore QB = low ceiling.
+    historical: "No NFL experience (rookie)"
+    edge_estimate: "-150 yards"
+
+  - player: "Jeremiyah Love"
+    market: rush_yards
+    line: 825.5
+    direction: UNDER
+    confidence: LEAN
+    reasoning: |
+      Rookie RB on ARI = hardest schedule in NFL (#32). Facing elite defenses
+      weekly. Rookie RBs on bad teams with hard schedules rarely hit 825.
+    historical: "Rookie (no NFL data)"
+    edge_estimate: "-100 yards"
+
+  - player: "Aaron Rodgers"
+    market: pass_yards
+    line: 3050.5
+    direction: SKIP
+    confidence: SKIP
+    reasoning: |
+      Age 42. NYJ acquired Geno Smith in March 2026. Unclear if Rodgers is even
+      the starter — Geno may have won the job. If Rodgers isn't starting,
+      this prop is irrelevant. CHECK STARTER STATUS before betting.
+      If he IS starting: NYJ disruption (new HC Glenn, new OC Reich) = under lean.
+    historical: "Declining trajectory, age concern"
+    edge_estimate: "uncertain — verify starter status"
+
+# ====================================================================
+# SKIPS — Line is fair or too much uncertainty
+# ====================================================================
+skips:
+  - player: "Patrick Mahomes"
+    market: pass_yards
+    line: 3600.5
+    reason: "Reid limits volume. Fair line."
+  - player: "Justin Herbert"
+    market: pass_yards
+    line: 3500.5
+    reason: "McDaniel could boost him but new system adjustment. Wait and see."
+  - player: "Caleb Williams"
+    market: pass_yards
+    line: 3575.5
+    reason: "Year 3, could break out or plateau. Too uncertain."
+  - player: "Davante Adams"
+    market: rec_yards
+    line: 775.5
+    reason: "On Rams (year 2). Age 33. Target share unclear with Puka Nacua + Stafford."
+  - player: "CeeDee Lamb"
+    market: rec_yards
+    line: 1200.5
+    reason: "DAL hard schedule (#27) + Prescott knee questionable. Too many variables."
+  - player: "George Pickens"
+    market: rec_yards
+    line: 1050.5
+    reason: "On DAL (traded from PIT in 2025). Year 2 in Dallas with Dak. Hard schedule but talent is there."
+  - player: "Jaxon Smith-Njigba"
+    market: rec_yards
+    line: 1350.5
+    reason: "WR1 in SEA year 3. Had ~1100 in 2025. 1350 asks for 23% jump — aggressive but Darnold is back. Close to fair."
+
+# ====================================================================
+# KEY CONTEXT NOTES
+# ====================================================================
+notes:
+  - "All prices -114/-114 unless otherwise noted in pass_tds section"
+  - "Pass TDs have variable juice — indicates FanDuel's directional lean"
+  - "Season props are different from per-game: injuries/missed games are the #1 risk"
+  - "OVER bets are inherently riskier (player must stay healthy 17 games)"
+  - "UNDER bets benefit from any missed games (built-in injury edge)"
+  - "Contract year signal only applies to skill positions (WR/TE/RB)"
+  - "Revisit after Week 4 — early production confirms or denies projections"
+  - "KEY 2026 OFFSEASON MOVES VERIFIED: Sam Darnold/Kenneth Walker won Super Bowl w/ SEA; Walker signed KC; AJ Brown traded PHI→NE; Mike Evans signed SF; DJ Moore traded CHI→BUF; Jaylen Waddle traded MIA→DEN; George Pickens traded PIT→DAL (2025); Emeka Egbuka drafted by TB (2025); DK Metcalf traded to PIT (2024); Davante Adams released by NYJ, signed LAR (2025); Geno Smith traded LV→NYJ; Kyler Murray signed MIN"
+  - "2026 ROOKIES ON PROP BOARD: Fernando Mendoza (LV #1), Carnell Tate (TEN #4), Jordyn Tyson (NO #8), Makai Lemon (PHI #20), Ashton Jeanty (DEN), Jeremiyah Love (ARI)"
+  - "YEAR-2 PLAYERS: Cam Ward (TEN), Jaxson Dart (NYG), Tyler Shough (NO), Luther Burden III (CHI), Emeka Egbuka (TB), Colston Loveland (DET)"
