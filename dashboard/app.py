@@ -15,10 +15,10 @@ st.set_page_config(
     page_title="NFL Props",
     page_icon="🏈",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
-# Hide default sidebar nav + streamlit branding for cleaner mobile feel
+# Clean up streamlit branding but KEEP sidebar navigation visible
 st.markdown("""
 <style>
     /* Push content below Streamlit's header */
@@ -34,8 +34,6 @@ st.markdown("""
     
     /* Hide the top-right deploy/share buttons */
     .stDeployButton { display: none; }
-    [data-testid="stToolbar"] { display: none; }
-    header [data-testid="stDecoration"] { display: none; }
     
     /* Metric cards */
     [data-testid="stMetric"] {

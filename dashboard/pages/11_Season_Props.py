@@ -111,9 +111,10 @@ st.markdown("---")
 
 # ===== NOTES =====
 st.markdown("### 📝 Key Notes")
-for note in notes:
+# Only show betting-relevant notes (first 7), not backend roster verification data
+betting_notes = [n for n in notes if not n.startswith("KEY 2026") and not n.startswith("2026 ROOKIES") and not n.startswith("YEAR-2")]
+for note in betting_notes:
     st.markdown(f"- {note}")
 
 st.markdown("---")
 st.caption("Analysis date: 2026-08-07 | Source: FanDuel NJ | All lines -114/-114 unless noted")
-st.caption("Pages: Best Bets • Team Props • Pass Yds • Rec Yds • Receptions • Rush Yds • TDs • Tracker • Research • Player Intel • **Season Props**")
