@@ -1,0 +1,208 @@
+# 2026 Contract Year Players
+# Players in the final year of their deal (UFA after 2026 season)
+# Source: Spotrac roster data + public reporting
+# Hypothesis: Contract year players outperform their lines (motivation effect)
+# ============================================================================
+#
+# Betting angle: These players have financial incentive to perform.
+# Research suggests ~2-3% over-rate improvement in contract years.
+# Most useful for: OVER bets when line is at or below rolling average.
+# Position priority: WR/TE/RB (stats directly = $$$), less so for QB (guaranteed $)
+#
+# Updated: 2026-08-07
+
+season: 2026
+
+# Tier 1: High-profile skill position players with clear financial incentive
+# These are the players most likely to "press" for stats
+tier_1_contract_year:
+  - player: "Ja'Marr Chase"
+    team: CIN
+    position: WR
+    age: 26
+    notes: "Extension talks stalled. Elite talent with chip on shoulder. OVER candidate all season."
+    
+  - player: "CeeDee Lamb"
+    team: DAL
+    position: WR
+    age: 27
+    notes: "Held out in 2024, played on tag 2025. Final year before UFA. Target monster."
+
+  - player: "Amon-Ra St. Brown"
+    team: DET
+    position: WR
+    age: 27
+    notes: "Extension-eligible. High-floor slot player. Receptions OVER candidate."
+
+  - player: "Nico Collins"
+    team: HOU
+    position: WR
+    age: 27
+    notes: "Breakout 2024-2025. Proving year for big deal. Deep threat + volume."
+
+  - player: "Tee Higgins"
+    team: CIN
+    position: WR
+    age: 27
+    notes: "Tagged 2025, UFA after 2026 if not extended. Needs big year for market."
+
+  - player: "Josh Jacobs"
+    team: GB
+    position: RB
+    age: 28
+    notes: "Signed 4yr deal 2024, but 2026 is key escalator year. Usage should stay high."
+
+  - player: "Alvin Kamara"
+    team: NO
+    position: RB
+    age: 31
+    notes: "Final year. Dual-threat but age concern. Reception props still viable OVER."
+
+  - player: "George Kittle"
+    team: SF
+    position: TE
+    age: 33
+    notes: "Could be final big contract year. TEs are our most exploitable position."
+
+  - player: "Dalton Kincaid"
+    team: BUF
+    position: TE
+    age: 25
+    notes: "Breakout candidate on rookie deal ending. Should see heavy targets."
+
+  - player: "Sam LaPorta"
+    team: DET
+    position: TE
+    age: 25
+    notes: "Rookie deal year 3. Proving himself for extension. High-floor TE."
+
+# Tier 2: Solid starters with motivation but less star power
+tier_2_contract_year:
+  - player: "Diontae Johnson"
+    team: HOU
+    position: WR
+    age: 30
+    notes: "Bounced around. Needs stable production for one more deal."
+
+  - player: "Christian Kirk"
+    team: JAX
+    position: WR
+    age: 28
+    notes: "Big contract aging. Needs to prove value for next deal or extension."
+
+  - player: "Khalil Shakir"
+    team: BUF
+    position: WR
+    age: 26
+    notes: "Breakout 2025. Final rookie deal year. Motivated for extension."
+
+  - player: "Jaylen Warren"
+    team: PIT
+    position: RB
+    age: 27
+    notes: "Split with Harris ending. Audition year for lead-back money."
+
+  - player: "Chuba Hubbard"
+    team: CAR
+    position: RB
+    age: 27
+    notes: "Became the guy in Carolina. Contract year = volume play."
+
+  - player: "Evan Engram"
+    team: JAX
+    position: TE
+    age: 32
+    notes: "Reception machine. Contract year TE = our best exploitable combo."
+
+  - player: "Cole Kmet"
+    team: CHI
+    position: TE
+    age: 26
+    notes: "Ascending TE. Extension talks possible. High target share."
+
+  - player: "Courtland Sutton"
+    team: DEN
+    position: WR
+    age: 31
+    notes: "Requested trade 2024. Playing for next contract. Volume receiver."
+
+  - player: "Terry McLaurin"
+    team: WAS
+    position: WR
+    age: 31
+    notes: "Consistent 1000-yard threat. Final year before UFA."
+
+  - player: "Zack Moss"
+    team: CIN
+    position: RB
+    age: 27
+    notes: "Goal-line back. Contract year = extra effort near end zone. TD prop OVER."
+
+# Tier 3: Depth/rotational players who could break out with motivation
+tier_3_contract_year:
+  - player: "Darnell Mooney"
+    team: ATL
+    position: WR
+    age: 28
+    notes: "Resurrected career in ATL. Proving year."
+
+  - player: "Rashod Bateman"
+    team: BAL
+    position: WR
+    age: 27
+    notes: "Underperformed draft capital. Last chance for big deal."
+
+  - player: "Michael Pittman Jr."
+    team: IND
+    position: WR
+    age: 28
+    notes: "Consistent but unspectacular. Contract year could push volume."
+
+  - player: "Tyler Lockett"
+    team: SEA
+    position: WR
+    age: 34
+    notes: "Aging but still productive. Could be final NFL year."
+
+  - player: "D'Andre Swift"
+    team: CHI
+    position: RB
+    age: 27
+    notes: "Needs to prove durability. Volume should be there."
+
+  - player: "Jonnu Smith"
+    team: MIA
+    position: TE
+    age: 30
+    notes: "Resurgence in 2025. Playing for extension. TE + contract year = exploitable."
+
+# QBs (less impactful for props since QB money is guaranteed regardless)
+qb_contract_year:
+  - player: "Dak Prescott"
+    team: DAL
+    position: QB
+    notes: "Massive contract but with outs. Needs to prove health after 2025 injury."
+
+  - player: "Justin Herbert"
+    team: LAC
+    position: QB
+    notes: "Extension year approaching. Elite arm. Should be aggressive."
+
+  - player: "Tua Tagovailoa"
+    team: MIA
+    position: QB
+    notes: "Wait - traded? Check current team status. Concussion history."
+
+# Strategy notes
+strategy:
+  primary_angle: "OVER on receiving/rushing props when line is at or below rolling average"
+  best_positions: ["WR", "TE", "RB"]
+  avoid: "QBs (guaranteed money regardless), aging players over 32 (body breaks down)"
+  combine_with:
+    - "Dome games (contract year + dome = double OVER signal)"
+    - "Weeks 13+ (contract year + playoff push = maximum motivation)"
+    - "Non-division games (less familiarity = exploit individual talent)"
+  caution:
+    - "Don't override strong UNDER signals (Week 1, new team, high injury)"
+    - "Contract year is a TIEBREAKER or BOOST, not a standalone bet"
+    - "Watch for holdout/trade request players (may not give full effort)"

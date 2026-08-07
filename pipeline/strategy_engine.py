@@ -10,12 +10,27 @@ CONFIRMED STRATEGIES (survived 3/3 seasons):
 4. Weeks 1-4 UNDER + outdoor + not primetime (+8.1% ROI)
 5. Weeks 13+ Pass TDs OVER + not cold (+10.9% ROI)
 6. Monday UNDER (+2.1% ROI)
+7. Rec UNDER + division + outdoor + not early (+9.5% ROI)
+8. Big underdog + Rush UNDER (+10.3% ROI)
+9. Dome + Pass TDs OVER (+8.7% ROI)
+10. High volatility players + UNDER (+8.7% ROI)
+11. Bellcow RB (line >70) UNDER (+4.3% ROI)
+12. Big fav + Receptions UNDER + outdoor (+5.5% ROI)
+13. Big underdog + Pass yards OVER + not cold (+6.1% ROI)
+14. Low total game (<=40) + UNDER (+2.5% ROI)
+15. Close game expected + Pass TDs OVER (+5.3% ROI)
+16. Cold outdoor Rec UNDER (+7.1% ROI)
+17. Outdoor Rec UNDER not primetime (+4.4% ROI, volume)
+18. Dome + Pass TD over at plus money (+25% EV, diamond)
+19. Contract year OVER boost (estimated +3-7.5% ROI)
 
 WEAK BUT DIRECTIONAL (2/3 seasons):
-7. Pass TDs (not windy/cold/division) - USE WITH DECLINING CONFIDENCE
-8. Rec UNDER + division + outdoor
-9. Windy + Pass UNDER
-10. Cold + Rush OVER
+20. Pass TDs (not windy/cold/division) - USE WITH DECLINING CONFIDENCE
+21. Rec UNDER + division + outdoor (weaker without not-early filter)
+22. Windy + Pass UNDER
+23. Cold + Rush OVER
+24. New team + early season UNDER
+25. Boom regression + division + outdoor
 """
 
 import pandas as pd
@@ -24,6 +39,7 @@ from pathlib import Path
 from datetime import datetime
 
 from pipeline.config_loader import load_settings, get_data_dir, load_stadiums
+from pipeline.ingest_contracts import is_contract_year_player
 
 
 FULL_TO_ABBR = {
@@ -67,6 +83,14 @@ def evaluate_prop(
     prev_game_boom: bool = False,
     opponent_injuries_out: int = 0,
     home_injuries_out: int = 0,
+    is_big_underdog: bool = False,
+    is_big_favorite: bool = False,
+    game_total: float = 45.0,
+    is_high_volatility_player: bool = False,
+    is_bellcow_rb: bool = False,
+    is_close_game_expected: bool = False,
+    player_position: str = "",
+    season: int = 2026,
 ) -> dict:
     """
     Evaluate a single prop bet through all confirmed strategy filters.
@@ -203,6 +227,176 @@ def evaluate_prop(
             "roi_historical": 20.6,
             "reasoning": f"High injury game ({total_injuries} players out) + outdoor. Everyone underperforms. (63.2% hit)."
         })
+
+    # ================================================
+    # NEW STRATEGIES (from all_profitable_strategies.md)
+    # ================================================
+
+    # ================================================
+    # STRATEGY: Rec UNDER + division + outdoor + not early season (CONFIRMED, +9.5%)
+    # ================================================
+    if (market in ["player_reception_yds", "player_receptions"]
+            and is_division and not is_dome and week > 4 and line_deviation_pct > 0):
+        signals.append({
+            "strategy": "Division outdoor Rec UNDER",
+            "direction": "under",
+            "confidence": 0.7,
+            "roi_historical": 9.5,
+            "reasoning": "Division familiarity + outdoor elements = tight coverage. (57.4% hit, ~106 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Big underdog + Rush UNDER (CONFIRMED, +10.3%)
+    # ================================================
+    if is_big_underdog and market == "player_rush_yds" and line_deviation_pct > 0:
+        signals.append({
+            "strategy": "Big underdog Rush UNDER",
+            "direction": "under",
+            "confidence": 0.7,
+            "roi_historical": 10.3,
+            "reasoning": "Big underdogs fall behind, abandon the run. Rush UNDER. (57.8% hit, ~75 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Dome + Pass TDs OVER all prices (CONFIRMED, +8.7%)
+    # ================================================
+    if is_dome and market == "player_pass_tds" and week > 4:
+        signals.append({
+            "strategy": "Dome Pass TDs OVER",
+            "direction": "over",
+            "confidence": 0.65,
+            "roi_historical": 8.7,
+            "reasoning": "Dome = perfect passing conditions. Pass TDs OVER. (57.0% hit, ~53 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: High volatility players + UNDER (CONFIRMED, +8.7%)
+    # ================================================
+    if is_high_volatility_player and line_deviation_pct > 0.05:
+        signals.append({
+            "strategy": "High volatility UNDER",
+            "direction": "under",
+            "confidence": 0.65,
+            "roi_historical": 8.7,
+            "reasoning": "Boom/bust player — FanDuel anchors to boom games but bust rate is higher. (57.0% hit)."
+        })
+
+    # ================================================
+    # STRATEGY: Bellcow RB (line >70) UNDER (CONFIRMED, +4.3%)
+    # ================================================
+    if is_bellcow_rb and market == "player_rush_yds" and fanduel_line > 70:
+        signals.append({
+            "strategy": "Bellcow RB UNDER",
+            "direction": "under",
+            "confidence": 0.58,
+            "roi_historical": 4.3,
+            "reasoning": "Star RB lines inflated by name value. UNDER at high lines. (54.7% hit, ~28 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Big favorite + Receptions UNDER + outdoor (CONFIRMED, +5.5%)
+    # ================================================
+    if (is_big_favorite and market == "player_receptions"
+            and not is_dome and line_deviation_pct > 0):
+        signals.append({
+            "strategy": "Big fav Rec UNDER",
+            "direction": "under",
+            "confidence": 0.6,
+            "roi_historical": 5.5,
+            "reasoning": "Favorites run the clock = fewer pass attempts = fewer catches. (55.3% hit, ~50 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Big underdog + Pass yards OVER + not cold (CONFIRMED, +6.1%)
+    # ================================================
+    if is_big_underdog and market == "player_pass_yds" and not is_cold and line_deviation_pct < -0.05:
+        signals.append({
+            "strategy": "Big dog Pass yards OVER",
+            "direction": "over",
+            "confidence": 0.6,
+            "roi_historical": 6.1,
+            "reasoning": "Big underdogs throw to catch up. Pass yards OVER when line is below avg. (55.6% hit)."
+        })
+
+    # ================================================
+    # STRATEGY: Low total game (<=40) + UNDER (CONFIRMED, +2.5%)
+    # ================================================
+    if game_total <= 40 and line_deviation_pct > 0.05:
+        signals.append({
+            "strategy": "Low total game UNDER",
+            "direction": "under",
+            "confidence": 0.55,
+            "roi_historical": 2.5,
+            "reasoning": f"Game total only {game_total}. Vegas knows it's low-scoring but props don't adjust enough. (53.7% hit)."
+        })
+
+    # ================================================
+    # STRATEGY: Close game expected + Pass TDs (CONFIRMED, +5.3%)
+    # ================================================
+    if is_close_game_expected and market == "player_pass_tds":
+        signals.append({
+            "strategy": "Close game Pass TDs",
+            "direction": "over",
+            "confidence": 0.6,
+            "roi_historical": 5.3,
+            "reasoning": "Tight games = red zone aggression = more TDs. (55.1% hit, ~142 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Rec UNDER + outdoor + cold (CONFIRMED, +7.1%)
+    # ================================================
+    if (market in ["player_reception_yds", "player_receptions"]
+            and is_cold and not is_dome and line_deviation_pct > 0):
+        signals.append({
+            "strategy": "Cold outdoor Rec UNDER",
+            "direction": "under",
+            "confidence": 0.65,
+            "roi_historical": 7.1,
+            "reasoning": "Cold hands = dropped passes. Reception/yards UNDER. (56.1% hit, ~49 bets/yr)."
+        })
+
+    # ================================================
+    # STRATEGY: Receptions UNDER + outdoor + not primetime (volume play, +4.4%)
+    # ================================================
+    if (market == "player_receptions" and not is_dome and not is_primetime
+            and line_deviation_pct > 0.05 and week > 4):
+        signals.append({
+            "strategy": "Outdoor Rec UNDER (volume)",
+            "direction": "under",
+            "confidence": 0.57,
+            "roi_historical": 4.4,
+            "reasoning": "Outdoor + not primetime = slight reception suppression. Volume play. (54.7% hit, ~351 bets/yr)."
+        })
+
+    # ================================================
+    # DIAMOND PLAY: Dome + Pass TD OVER at plus money (+150+)
+    # ================================================
+    if is_dome and market == "player_pass_tds" and fanduel_price >= 150:
+        signals.append({
+            "strategy": "Diamond: Dome Pass TD +money",
+            "direction": "over",
+            "confidence": 0.7,
+            "roi_historical": 25.0,
+            "reasoning": "Dome + plus money pass TD over. 45.9% hit vs 36.9% implied = +$25 EV per $100. DIAMOND."
+        })
+
+    # ================================================
+    # STRATEGY: Contract Year OVER boost
+    # ================================================
+    contract_info = is_contract_year_player(player_name, season)
+    if contract_info and player_position in ["WR", "TE", "RB"]:
+        # Contract year is a BOOST, not a standalone bet
+        # Only fires when line is at or below rolling avg (book hasn't priced in motivation)
+        if line_deviation_pct <= 0.02:  # line not inflated
+            boost = contract_info["contract_boost"]
+            tier = contract_info["contract_tier"]
+            signals.append({
+                "strategy": "Contract year OVER",
+                "direction": "over",
+                "confidence": 0.5 + boost,  # base 0.5 + tier boost
+                "roi_historical": 3.0 + (4 - tier) * 1.5,  # estimated: tier 1 = 7.5%, tier 3 = 4.5%
+                "reasoning": f"Contract year player (Tier {tier}). Financial motivation to outperform. Line not inflated ({line_deviation_pct:+.0%} vs avg)."
+            })
 
     # ================================================
     # DETERMINE FINAL SIGNAL

@@ -1,5 +1,6 @@
 # 2026 Preseason Intelligence
-# Sources: ESPN Newcomers Impact Rankings, Sharp Football SOS
+# Sources: ESPN Newcomers Impact Rankings, Sharp Football SOS, Spotrac, public reporting
+# Updated: 2026-08-07
 # ============================================================
 
 season: 2026
@@ -181,3 +182,216 @@ week_1_strategy:
     - Target players on new teams ESPECIALLY hard
     
     BET SIZING: 2-3 units on each Week 1 under play (max confidence).
+
+
+# ============================================================
+# KEY INJURIES TO MONITOR (impact on Week 1+ prop lines)
+# ============================================================
+injuries_watch:
+  # These players' availability changes how we bet their games
+  high_impact:
+    - player: "Dak Prescott"
+      team: DAL
+      position: QB
+      injury: "Season-ending hamstring (2025). Return timeline uncertain."
+      prop_impact: |
+        If OUT: Cooper Rush starts. Dallas passing game = heavy UNDER.
+        If IN: Likely limited early. Pass yards UNDER lean Week 1-3.
+
+    - player: "A.J. Brown"
+      team: NE
+      position: WR
+      injury: "Knee scope Feb 2026. Expected full camp."
+      prop_impact: |
+        New team (NE) + recovering from knee. Double UNDER signal early.
+        If limited in camp: even stronger UNDER Week 1.
+
+    - player: "Nick Chubb"
+      team: CLE
+      position: RB
+      injury: "Returned late 2025 from major knee injury. Workload management."
+      prop_impact: |
+        Line may be set conservatively. If back to full health = OVER candidate.
+        Monitor snap count reports closely.
+
+    - player: "Chris Godwin"
+      team: TB
+      position: WR
+      injury: "Dislocated ankle (Oct 2025). Long recovery."
+      prop_impact: |
+        If active: Lines will be low. Could be OVER if healthy.
+        If OUT: Evans/Otton see boost. Adjust receiving prop targets.
+
+    - player: "Joe Burrow"
+      team: CIN
+      position: QB
+      injury: "Wrist surgery (2025). Said to be throwing well."
+      prop_impact: |
+        If healthy: CIN offense has easiest schedule (#2). OVER candidate.
+        Monitor velocity reports from camp.
+
+  medium_impact:
+    - player: "Davante Adams"
+      team: NYJ
+      position: WR
+      injury: "Age (33) + various soft tissue issues 2025."
+      prop_impact: "If limited: reduces Jets passing ceiling. Garrett Wilson becomes primary."
+
+    - player: "Jonathan Taylor"
+      team: IND
+      position: RB
+      injury: "Ankle issues 2025. Age 27."
+      prop_impact: "If healthy: workload should be high. Monitor camp reports."
+
+    - player: "Puka Nacua"
+      team: LAR
+      position: WR
+      injury: "Knee scope offseason. Expected full."
+      prop_impact: "Elite WR2. If fully healthy = reception OVER candidate."
+
+# ============================================================
+# BREAKOUT CANDIDATES (Over lean mid/late season)
+# ============================================================
+# Players likely to exceed their FanDuel prop lines after settling in
+breakout_candidates:
+  - player: "Brock Bowers"
+    team: LV
+    position: TE
+    notes: |
+      Historic rookie year (112 receptions). Cousins should lean on him heavily.
+      TE + contract year (Tier 2). Reception props OVER all season.
+    confidence: HIGH
+
+  - player: "Keon Coleman"
+    team: BUF
+    position: WR
+    notes: |
+      Sophomore year. Josh Allen's new WR1 with DJ Moore as WR2.
+      Physical freak, 6'4". Deep threat + red zone. TD props interesting.
+    confidence: MEDIUM
+
+  - player: "Ladd McConkey"
+    team: LAC
+    position: WR
+    notes: |
+      Year 2 + McDaniel as OC. Could explode in this new system.
+      Herbert + McDaniel scheme = target monster potential.
+    confidence: HIGH
+
+  - player: "Jaxon Smith-Njigba"
+    team: SEA
+    position: WR
+    notes: |
+      Year 3 breakout. DK Metcalf aged/injured. JSN becomes alpha.
+      High-floor slot type. Receptions OVER lean.
+    confidence: MEDIUM
+
+  - player: "Jayden Daniels"
+    team: WAS
+    position: QB
+    notes: |
+      Year 2 QB. Rushing props remain strong despite 2025 struggles.
+      Pass props caution (new OC, first-time play-caller).
+    confidence: MEDIUM (rush only)
+
+  - player: "Marvin Harrison Jr."
+    team: ARI
+    position: WR
+    notes: |
+      Year 2. Kyler traded to MIN — who is QBing now? Check.
+      If new QB is limited: receiving UNDER. If competent: OVER.
+    confidence: UNCERTAIN (QB-dependent)
+
+  - player: "Ray Davis"
+    team: BUF
+    position: RB
+    notes: |
+      Year 2 behind James Cook. If Cook slows/injured: immediate RB1.
+      Monitor camp battle. If split: both UNDER on high lines.
+    confidence: LOW (situational)
+
+# ============================================================
+# DOME TEAMS (crucial for our dome strategies)
+# ============================================================
+dome_teams:
+  full_dome:
+    - ATL  # Mercedes-Benz Stadium
+    - DAL  # AT&T Stadium
+    - DET  # Ford Field
+    - HOU  # NRG Stadium
+    - IND  # Lucas Oil Stadium
+    - LV   # Allegiant Stadium
+    - LAR  # SoFi Stadium
+    - LAC  # SoFi Stadium
+    - MIN  # U.S. Bank Stadium
+    - NO   # Caesars Superdome
+    - ARI  # State Farm Stadium (retractable, usually closed)
+  notes: |
+    11 dome teams. Each plays 8-9 home games + some away dome matchups.
+    Dome games trigger: Pass TDs OVER, Diamond plays at plus money.
+    Cross-reference with schedule to find dome-dome matchups (double signal).
+
+# ============================================================
+# DIVISION GAME MATCHUPS (key for division UNDER strategy)
+# ============================================================
+# Each team plays 6 division games per season
+# Division games: Rec UNDER + outdoor + not early season = 57.4% hit rate
+# Flag all divisional outdoor matchups after Week 4
+division_structure:
+  AFC_East: [BUF, MIA, NE, NYJ]
+  AFC_North: [BAL, CIN, CLE, PIT]
+  AFC_South: [HOU, IND, JAX, TEN]
+  AFC_West: [DEN, KC, LAC, LV]
+  NFC_East: [DAL, NYG, PHI, WAS]
+  NFC_North: [CHI, DET, GB, MIN]
+  NFC_South: [ATL, CAR, NO, TB]
+  NFC_West: [ARI, LAR, SEA, SF]
+
+# ============================================================
+# CONSOLIDATED WEEK 1 BETTING BRIEF
+# ============================================================
+week_1_brief:
+  overall_confidence: "MAXIMUM"
+  total_edge_estimate: "+21.7% ROI across all unders"
+  
+  slam_plays:
+    - "ALL passing TDs UNDER (75.8% historical hit rate)"
+    - "ALL passing yards UNDER (70.6% hit rate)"
+    - "ALL receptions UNDER (62.0% hit rate)"
+    - "New team players: EXTRA units UNDER (A.J. Brown, DJ Moore, Waddle, Murray)"
+    
+  enhanced_2026_factors:
+    - "7 teams have new head coaches (unprecedented turnover)"
+    - "21 new offensive coordinators (65%+ of league)"
+    - "Multiple first-time play-callers (BAL Doyle, WAS Blough, PHI Mannion)"
+    - "10+ significant QB/WR combinations never played together"
+    - "This is the MOST DISRUPTED offseason in recent memory"
+    
+  unit_sizing:
+    pass_tds_under: "3 units (max)"
+    pass_yards_under: "3 units"
+    receptions_under: "2 units"
+    new_team_players: "3 units"
+    all_other_unders: "2 units"
+    
+  avoid:
+    - "Any OVER bet Week 1 (we want zero exposure)"
+    - "Dome game overs (normally good, but Week 1 under overrides)"
+    - "Contract year OVER signals (Week 1 under is stronger than motivation)"
+
+# ============================================================
+# SEASON-LONG CALENDAR NOTES
+# ============================================================
+calendar_notes:
+  week_1: "2026-09-05 (Thursday) thru 2026-09-08 (Monday)"
+  thanksgiving: "2026-11-26 (Week 12)"
+  trade_deadline: "2026-11-03 (Week 9) — monitor for new-team adjustments"
+  playoff_push: "Weeks 13-18 (late Nov thru early Jan) — Pass TDs OVER"
+  playoffs_start: "2027-01-09 (Wild Card) — HEAVY UNDER"
+  super_bowl: "2027-02-07"
+  
+  key_dates:
+    - "Aug 7: Preseason begins (monitor starters playing)"
+    - "Aug 26: Final roster cuts (53-man)"
+    - "Sep 1: Practice squads set"
+    - "Sep 5: Week 1 kickoff — OUR BIGGEST EDGE"

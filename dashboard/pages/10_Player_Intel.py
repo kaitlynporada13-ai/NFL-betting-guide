@@ -160,6 +160,66 @@ else:
 
 st.markdown("---")
 
+# ===== CONTRACT YEAR PLAYERS =====
+st.header("💰 Contract Year Players (2026)")
+st.caption("Players in the final year of their deal — financial motivation to outperform.")
+
+st.markdown("""
+**How to use:** Contract year is a **tiebreaker** or **confidence boost**, not a standalone bet.
+- When another strategy says OVER and the player is in a contract year → SIZE UP
+- When the line is at or below rolling average → lean OVER
+- DO NOT override strong UNDER signals (Week 1, new team, high injury)
+""")
+
+contract_path = PROC_DIR / "contract_year_players.parquet"
+
+if contract_path.exists():
+    contracts = pd.read_parquet(contract_path)
+    
+    # Tier tabs
+    tab1, tab2, tab3 = st.tabs(["Tier 1 (High Impact)", "Tier 2 (Solid)", "Tier 3 (Depth)"])
+    
+    with tab1:
+        st.markdown("**Highest motivation signal.** Star players playing for mega-deals.")
+        t1 = contracts[contracts["contract_tier"] == 1][["player", "team", "position", "notes"]]
+        t1 = t1.rename(columns={"player": "Player", "team": "Team", "position": "Pos", "notes": "Betting Notes"})
+        st.dataframe(t1, use_container_width=True, hide_index=True)
+    
+    with tab2:
+        st.markdown("**Moderate signal.** Proven starters looking for their next deal.")
+        t2 = contracts[contracts["contract_tier"] == 2][["player", "team", "position", "notes"]]
+        t2 = t2.rename(columns={"player": "Player", "team": "Team", "position": "Pos", "notes": "Betting Notes"})
+        st.dataframe(t2, use_container_width=True, hide_index=True)
+    
+    with tab3:
+        st.markdown("**Weak signal.** Role players who could break out with extra motivation.")
+        t3 = contracts[contracts["contract_tier"] == 3][["player", "team", "position", "notes"]]
+        t3 = t3.rename(columns={"player": "Player", "team": "Team", "position": "Pos", "notes": "Betting Notes"})
+        st.dataframe(t3, use_container_width=True, hide_index=True)
+
+    # Summary stats
+    st.markdown("---")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Total Players", len(contracts[contracts["contract_tier"] <= 3]))
+    with col2:
+        st.metric("WRs", len(contracts[(contracts["position"] == "WR") & (contracts["contract_tier"] <= 3)]))
+    with col3:
+        st.metric("TEs", len(contracts[(contracts["position"] == "TE") & (contracts["contract_tier"] <= 3)]))
+    with col4:
+        st.metric("RBs", len(contracts[(contracts["position"] == "RB") & (contracts["contract_tier"] <= 3)]))
+
+    st.markdown("""
+    **Best combos with contract year:**
+    - Contract year + Dome game = double OVER signal
+    - Contract year + Weeks 13-18 (playoff push) = maximum motivation
+    - Contract year + TE position = our most exploitable combo
+    """)
+else:
+    st.info("Contract year data not built yet. Run: `python -m pipeline.ingest_contracts`")
+
+st.markdown("---")
+
 # ===== POSITION BREAKDOWN =====
 st.header("📊 Position Exploitability")
 st.markdown("""
