@@ -1,30 +1,39 @@
-# NFL Betting Analytics - Weekly Prediction Pipeline
-# Runs every Wednesday (data pull) and Thursday (predictions) during NFL season
-# Also can be triggered manually via workflow_dispatch
+# NFL Betting Analytics - Weekly Pipeline
+# Captures lines, generates predictions, and produces bet cards
+#
+# Schedule (all times ET):
+#   Tuesday 6pm: First line capture (props just posted)
+#   Wednesday 8am: Second capture + data pull
+#   Thursday 8am: Final bet card generation
+#   Sunday 9am: Closing line capture (for CLV tracking)
+#
+# SEASON ONLY: Sep 2 through Feb 15 (regular season + playoffs)
 
-name: Weekly NFL Predictions
+name: Weekly NFL Pipeline
 
 on:
   schedule:
-    # Run Wednesday 8am ET (1pm UTC) - pull fresh data
+    # Tuesday 6pm ET = 11pm UTC (earliest prop capture)
+    - cron: '0 23 * * 2'
+    # Wednesday 8am ET = 1pm UTC (second capture + data)
     - cron: '0 13 * * 3'
-    # Run Thursday 8am ET (1pm UTC) - generate predictions
+    # Thursday 8am ET = 1pm UTC (bet card generation)
     - cron: '0 13 * * 4'
-    # Run Sunday 8am ET (1pm UTC) - final update with weather/inactives
-    - cron: '0 13 * * 0'
+    # Sunday 9am ET = 2pm UTC (closing line capture)
+    - cron: '0 14 * * 0'
 
-  # Allow manual trigger
   workflow_dispatch:
     inputs:
       mode:
         description: 'Pipeline mode'
         required: true
-        default: 'predict'
+        default: 'bet-card'
         type: choice
         options:
-          - predict
+          - capture-lines
+          - bet-card
+          - full-predict
           - train
-          - ingest-only
 
 env:
   ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -33,70 +42,93 @@ env:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    
+
     steps:
+      - name: Check if in-season
+        id: season-check
+        run: |
+          MONTH=$(date +%m)
+          DAY=$(date +%d)
+          # Run Sep 1 through Feb 15 only (unless manual trigger)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "in_season=true" >> $GITHUB_OUTPUT
+          elif [ "$MONTH" -ge "9" ] || [ "$MONTH" -le "2" ]; then
+            echo "in_season=true" >> $GITHUB_OUTPUT
+          else
+            echo "in_season=false" >> $GITHUB_OUTPUT
+            echo "Offseason - skipping run"
+          fi
+
       - name: Checkout repository
+        if: steps.season-check.outputs.in_season == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: steps.season-check.outputs.in_season == 'true'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           cache: 'pip'
 
       - name: Install dependencies
+        if: steps.season-check.outputs.in_season == 'true'
         run: pip install -r requirements.txt
 
       - name: Determine run mode
+        if: steps.season-check.outputs.in_season == 'true'
         id: mode
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "mode=${{ inputs.mode }}" >> $GITHUB_OUTPUT
-          elif [ "$(date +%u)" = "3" ]; then
-            # Wednesday: just ingest fresh data
-            echo "mode=ingest-only" >> $GITHUB_OUTPUT
-          elif [ "$(date +%u)" = "4" ]; then
-            # Thursday: full prediction run
-            echo "mode=predict" >> $GITHUB_OUTPUT
           else
-            # Sunday: update with final weather/inactive info
-            echo "mode=predict" >> $GITHUB_OUTPUT
+            DOW=$(date +%u)
+            if [ "$DOW" = "2" ]; then
+              echo "mode=capture-lines" >> $GITHUB_OUTPUT
+            elif [ "$DOW" = "3" ]; then
+              echo "mode=capture-lines" >> $GITHUB_OUTPUT
+            elif [ "$DOW" = "4" ]; then
+              echo "mode=bet-card" >> $GITHUB_OUTPUT
+            elif [ "$DOW" = "7" ]; then
+              echo "mode=capture-lines" >> $GITHUB_OUTPUT
+            else
+              echo "mode=capture-lines" >> $GITHUB_OUTPUT
+            fi
           fi
 
-      - name: Pull fresh data
-        if: steps.mode.outputs.mode == 'ingest-only' || steps.mode.outputs.mode == 'predict'
+      # ===== LINE CAPTURE =====
+      - name: Capture lines
+        if: steps.season-check.outputs.in_season == 'true' && (steps.mode.outputs.mode == 'capture-lines' || steps.mode.outputs.mode == 'bet-card' || steps.mode.outputs.mode == 'full-predict')
+        run: python -m pipeline.capture_lines
+
+      # ===== BET CARD =====
+      - name: Generate bet card
+        if: steps.season-check.outputs.in_season == 'true' && (steps.mode.outputs.mode == 'bet-card' || steps.mode.outputs.mode == 'full-predict')
+        run: python -m pipeline.generate_bet_card
+
+      # ===== FULL PREDICTIONS =====
+      - name: Pull fresh stats
+        if: steps.season-check.outputs.in_season == 'true' && steps.mode.outputs.mode == 'full-predict'
         run: |
           python -m pipeline.ingest_stats
-          python -m pipeline.ingest_odds
           python -m pipeline.ingest_injuries
-          python -m pipeline.ingest_hierarchy
 
-      - name: Run predictions
-        if: steps.mode.outputs.mode == 'predict'
+      - name: Run model predictions
+        if: steps.season-check.outputs.in_season == 'true' && steps.mode.outputs.mode == 'full-predict'
         run: python -m pipeline.run_predictions
 
+      # ===== TRAIN =====
       - name: Train models
-        if: steps.mode.outputs.mode == 'train'
+        if: steps.season-check.outputs.in_season == 'true' && steps.mode.outputs.mode == 'train'
         run: |
-          python -m pipeline.ingest_stats
-          python -m pipeline.ingest_hierarchy
           python -m pipeline.feature_engineering
           python -m pipeline.run_predictions train
 
-      - name: Upload prediction artifacts
-        if: steps.mode.outputs.mode == 'predict'
-        uses: actions/upload-artifact@v4
-        with:
-          name: predictions-${{ github.run_number }}
-          path: |
-            data/processed/best_bets_latest.parquet
-            data/processed/*_latest.parquet
-
+      # ===== COMMIT RESULTS =====
       - name: Commit updated data
-        if: steps.mode.outputs.mode == 'predict' || steps.mode.outputs.mode == 'ingest-only'
+        if: steps.season-check.outputs.in_season == 'true'
         run: |
           git config user.name "NFL Bot"
           git config user.email "bot@nfl-analytics.local"
-          git add -A data/processed/
-          git diff --staged --quiet || git commit -m "Auto-update: predictions $(date +%Y-%m-%d)"
-          git push
+          git add -A data/processed/ data/lines/
+          git diff --staged --quiet || git commit -m "Auto: Week $(date +%V) $(echo ${{ steps.mode.outputs.mode }}) $(date +%Y-%m-%d)"
+          git push || echo "Nothing to push"
