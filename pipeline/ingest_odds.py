@@ -157,25 +157,27 @@ def pull_player_props(event_id: str, prop_markets: list[str] | None = None) -> p
                 continue
 
             for mkt in bookmaker_data.get("markets", []):
-                for outcome in mkt["outcomes"]:
+                # last_update can live at market or bookmaker level (varies by endpoint)
+                last_update = mkt.get("last_update") or bookmaker_data.get("last_update")
+                for outcome in mkt.get("outcomes", []):
                     row = {
                         "event_id": event_id,
                         "home_team": data.get("home_team"),
                         "away_team": data.get("away_team"),
                         "commence_time": data.get("commence_time"),
                         "market": mkt["key"],
-                        "player_name": outcome.get("description", outcome["name"]),
-                        "outcome_name": outcome["name"],  # Over/Under
-                        "outcome_price": outcome["price"],
+                        "player_name": outcome.get("description", outcome.get("name")),
+                        "outcome_name": outcome.get("name"),  # Over/Under
+                        "outcome_price": outcome.get("price"),
                         "outcome_point": outcome.get("point"),
-                        "last_update": bookmaker_data["last_update"],
+                        "last_update": last_update,
                     }
                     all_rows.append(row)
 
     df = pd.DataFrame(all_rows)
     if not df.empty:
-        df["commence_time"] = pd.to_datetime(df["commence_time"])
-        df["last_update"] = pd.to_datetime(df["last_update"])
+        df["commence_time"] = pd.to_datetime(df["commence_time"], errors="coerce")
+        df["last_update"] = pd.to_datetime(df["last_update"], errors="coerce")
         df["pulled_at"] = datetime.utcnow()
 
     print(f"  Retrieved {len(df)} player prop lines")
