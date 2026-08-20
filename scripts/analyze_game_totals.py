@@ -185,8 +185,10 @@ def main(target_date="2026-09-13"):
         print("No games/odds available.")
         return
 
-    # Filter to target date's games
-    odds["date"] = pd.to_datetime(odds["commence_time"]).dt.date.astype(str)
+    # Filter to target date's games — convert UTC to ET first so late Sunday
+    # night games (8:20pm ET = 00:20 UTC next day) stay on the correct date.
+    ct = pd.to_datetime(odds["commence_time"], utc=True, errors="coerce")
+    odds["date"] = (ct - pd.Timedelta(hours=4)).dt.date.astype(str)  # EDT in September
     slate = odds[odds["date"] == target_date]
     if slate.empty:
         print(f"No games found for {target_date}. Available dates:")
