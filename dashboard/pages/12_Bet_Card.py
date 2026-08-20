@@ -25,7 +25,7 @@ MARKET_ORDER = [
     "player_pass_yds", "player_pass_tds", "player_rush_yds",
     "player_receptions", "player_reception_yds", "player_anytime_td",
 ]
-TIER_RANK = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "SPECULATIVE": 3}
+TIER_RANK = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "SPECULATIVE": 3, "LOW-LINE": 4}
 
 
 st.title("🎯 Weekly Bet Card")
@@ -63,7 +63,9 @@ st.markdown("---")
 st.markdown("### 🔥 Highest Conviction Plays")
 st.caption("Top plays across every prop type, ranked by model/strategy confidence.")
 
-top = card.sort_values(["tier_rank", "confidence"], ascending=[True, False]).head(12)
+# Exclude low-line flagged plays from the top conviction list
+_top_pool = card[card["confidence_tier"] != "LOW-LINE"] if "confidence_tier" in card.columns else card
+top = _top_pool.sort_values(["tier_rank", "confidence"], ascending=[True, False]).head(12)
 
 top_display = top[["dir_label", "player", "market_name", "line", "units", "confidence_tier"]].copy()
 top_display.columns = ["Bet", "Player", "Prop", "Line", "Units", "Tier"]

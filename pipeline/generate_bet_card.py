@@ -24,6 +24,26 @@ from pipeline.ingest_contracts import is_contract_year_player
 PROC_DIR = get_data_dir("processed")
 NOTES_DIR = Path(__file__).parent.parent / "data" / "human_notes"
 
+# Below these lines, a player is a backup/committee/low-volume role.
+# FanDuel prices these tightly, so there's little edge. We keep the play
+# but flag it and downgrade its tier so it sinks to the bottom of the card.
+MEANINGFUL_LINE_THRESHOLDS = {
+    "player_pass_yds": 200,      # backup QB / limited passer below this
+    "player_pass_tds": 1.5,      # anything at/below 1.5 is thin
+    "player_rush_yds": 45,       # committee/change-of-pace back below this
+    "player_receptions": 3.5,    # depth WR/TE below this
+    "player_reception_yds": 40,  # depth pass-catcher below this
+    "player_anytime_td": 999,    # TD props are yes/no, threshold n/a
+}
+
+
+def is_low_line(market: str, line: float) -> bool:
+    """True if the line is low enough that the player is likely a backup/low-volume role."""
+    threshold = MEANINGFUL_LINE_THRESHOLDS.get(market)
+    if threshold is None:
+        return False
+    return line < threshold
+
 
 def get_current_week() -> int:
     """Estimate current NFL week based on date."""
@@ -215,17 +235,32 @@ def generate_bet_card():
         )
 
         if result["action"] != "no_bet":
+            confidence = result["confidence"]
+            tier = result["confidence_tier"]
+            units = result["units"]
+            reasoning = result["reasoning"]
+
+            # Flag low-line backup/low-volume plays: keep them, but downgrade
+            low_line = is_low_line(market, line)
+            if low_line:
+                confidence = max(confidence - 0.25, 0.05)  # push down the ranking
+                tier = "LOW-LINE"
+                units = min(units, 0.5)
+                reasoning = ("[LOW-LINE / limited edge — backup or low-volume role, "
+                             "FanDuel prices these tightly] " + reasoning)
+
             bet_card.append({
                 "player": player_name,
                 "market": market,
                 "line": line,
                 "price": price,
                 "direction": result["direction"],
-                "confidence": result["confidence"],
-                "confidence_tier": result["confidence_tier"],
-                "units": result["units"],
+                "confidence": confidence,
+                "confidence_tier": tier,
+                "units": units,
+                "low_line_flag": low_line,
                 "strategy": result["strategy"],
-                "reasoning": result["reasoning"],
+                "reasoning": reasoning,
                 "strategies_triggered": result["strategies_triggered"],
                 "home_team": home_team,
                 "away_team": away_team,
