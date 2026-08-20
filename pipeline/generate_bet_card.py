@@ -30,7 +30,11 @@ def get_current_week() -> int:
     season_start = date(2026, 9, 5)  # Week 1 Thursday
     today = date.today()
     if today < season_start:
-        return 0  # preseason
+        # Preseason: if within ~4 weeks of kickoff, Week 1 props are live — treat as Week 1
+        days_until = (season_start - today).days
+        if days_until <= 28:
+            return 1  # prepping for / betting Week 1 early
+        return 0  # too early, no props yet
     days = (today - season_start).days
     return min(max(1, days // 7 + 1), 22)
 

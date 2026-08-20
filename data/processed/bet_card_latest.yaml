@@ -1,0 +1,139 @@
+generated: '2026-08-20T18:50:50.938737+00:00'
+top_plays:
+- confidence_tier: HIGH
+  direction: under
+  line: 229.5
+  market: player_pass_yds
+  player: Drake Maye
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). Pass yards very strong (70.6% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 230.5
+  market: player_pass_yds
+  player: Sam Darnold
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). Pass yards very strong (70.6% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 1.5
+  market: player_pass_tds
+  player: Drake Maye
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). Pass TDs especially strong (75.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 1.5
+  market: player_pass_tds
+  player: Sam Darnold
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). Pass TDs especially strong (75.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 21.5
+  market: player_rush_yds
+  player: George Holani
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 37.5
+  market: player_rush_yds
+  player: TreVeyon Henderson
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 84.5
+  market: player_reception_yds
+  player: Jaxon Smith-Njigba
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 5.5
+  market: player_rush_yds
+  player: Sam Darnold
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 2.5
+  market: player_receptions
+  player: AJ Barner
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 2.5
+  market: player_receptions
+  player: Rashid Shaheed
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 28.5
+  market: player_reception_yds
+  player: Rashid Shaheed
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit). [2 confirming signals]'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 21.5
+  market: player_rush_yds
+  player: Drake Maye
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit).'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 48.5
+  market: player_rush_yds
+  player: Jadarian Price
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit).'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 40.5
+  market: player_rush_yds
+  player: Rhamondre Stevenson
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit).'
+  strategy: Week 1 UNDER
+  units: 3.0
+- confidence_tier: HIGH
+  direction: under
+  line: 2.5
+  market: player_receptions
+  player: Cooper Kupp
+  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
+    (63.8% hit).'
+  strategy: Week 1 UNDER
+  units: 3.0
+total_plays: 22
+week: 1

@@ -1,0 +1,128 @@
+# Week 1 2026 Injury & Roster Intel
+# Compiled: 2026-08-20 (verified via ESPN, NFL.com, CBS, team sites)
+# Use this to override/filter bet card plays affected by injuries or roster moves
+# ============================================================================
+
+updated: "2026-08-20"
+
+# ============================================================
+# CONFIRMED OUT / DOUBTFUL FOR WEEK 1
+# ============================================================
+out_or_doubtful:
+  - player: "Alvin Kamara"
+    team: NO
+    injury: "Sprained MCL (joint practice vs DAL)"
+    status: "OUT at least 1 month"
+    prop_impact: "FADE all Kamara season/game props. Missing ~4+ games. Boosts backup RB (Kendre Miller)."
+
+  - player: "Jordyn Tyson"
+    team: NO
+    injury: "Hamstring"
+    status: "OUT ~2 months (rookie)"
+    prop_impact: "FADE. Rookie WR missing significant time. Season rec yards 750.5 = strong under if still posted."
+
+  - player: "Jeremiyah Love"
+    team: ARI
+    injury: "High ankle sprain"
+    status: "Unlikely to play rest of preseason; Week 1 questionable"
+    prop_impact: "FADE rush props. Rookie + ankle + hardest schedule (#32). Season 825.5 = under."
+
+  - player: "Jayden Higgins"
+    team: HOU
+    injury: "Torn ACL"
+    status: "OUT for 2026 season"
+    prop_impact: "N/A (not on prop board). Boosts other HOU WRs (Nico Collins target share up)."
+
+  - player: "Keon Coleman"
+    team: BUF
+    injury: "Sprained foot/toe (preseason opener)"
+    status: "Monitor — Week 1 uncertain"
+    prop_impact: "Caution on Coleman props. If out, boosts DJ Moore / Khalil Shakir."
+
+  - player: "Tyler Warren"
+    team: IND
+    injury: "Groin"
+    status: "Monitor"
+    prop_impact: "Caution on Warren rec props (season 750.5)."
+
+# ============================================================
+# RECOVERING — PLAYING BUT RISK (coming off major injury)
+# ============================================================
+injury_risk_playing:
+  - player: "Patrick Mahomes"
+    team: KC
+    injury: "Torn ACL + LCL damage (late 2025), dual-ligament reconstruction, 7mo recovery"
+    status: "Cleared for contact July 24; sitting all preseason (precaution); expected Week 1"
+    prop_impact: |
+      MAJOR CAUTION. Coming off dual-ligament knee reconstruction. Even if he plays
+      Week 1, mobility and rhythm may be limited early. Season pass yards 3600.5 /
+      pass TDs 24.5 carry elevated risk. Lean UNDER early-season Mahomes props.
+      Justin Fields is the KC backup if setback occurs.
+
+  - player: "Breece Hall"
+    team: NYJ
+    injury: "Groin strain (camp)"
+    status: "Expected ready for Week 1 vs TEN"
+    prop_impact: "Monitor but likely fine. No strong fade."
+
+  - player: "Najee Harris"
+    team: NYG
+    injury: "Recovering from Achilles tear (offseason)"
+    status: "Signed 1yr deal Aug 18; acclimating; committee back"
+    prop_impact: "Committee with Tyrone Tracy Jr. Coming off Achilles. Low individual ceiling."
+
+# ============================================================
+# ROSTER MOVES — CORRECTIONS TO OUR DATA
+# ============================================================
+roster_corrections:
+  - player: "David Montgomery"
+    old_team: DET
+    new_team: HOU
+    date: "2026-03-02"
+    note: |
+      TRADED Lions -> Texans. Was listed as DET in our season props with DET easy-schedule
+      boost. Now HOU lead back (also easy schedule #5). C.J. Stroud offense. Still viable
+      but context changed. Also: Jahmyr Gibbs now sole lead back in DET (boosts Gibbs).
+
+  - player: "Najee Harris"
+    old_team: LAC
+    new_team: NYG
+    date: "2026-08-18"
+    note: "Signed 1yr deal. Committee with Tyrone Tracy Jr. Coming off Achilles."
+
+  - player: "JuJu Smith-Schuster"
+    old_team: NYG
+    new_team: "Released (FA)"
+    date: "2026-08-18"
+    note: "Cut to make room for Najee Harris."
+
+  - player: "Jahmyr Gibbs"
+    team: DET
+    note: "Montgomery traded away = Gibbs is now the clear workhorse. BOOST rush + rec props."
+
+# ============================================================
+# TEAM-LEVEL O-LINE / PROTECTION CONCERNS
+# ============================================================
+protection_concerns:
+  - team: WAS
+    note: "LT Laremy Tunsil tore triceps (out). Hurts Jayden Daniels protection + pass game."
+  - team: LAC
+    note: "C Tyler Biadasz out indefinitely (ACL in practice). Interior line concern for Herbert."
+
+# ============================================================
+# ACTIONABLE SUMMARY FOR WEEK 1 CARD
+# ============================================================
+bet_card_overrides:
+  hard_fades:  # Do NOT bet OVER on these; strong UNDER candidates
+    - "Alvin Kamara (out 1mo)"
+    - "Jordyn Tyson (out 2mo)"
+    - "Jeremiyah Love (ankle, questionable)"
+  caution:  # Reduce confidence / verify inactive status before betting
+    - "Patrick Mahomes (post ACL/LCL reconstruction)"
+    - "Keon Coleman (foot/toe)"
+    - "Tyler Warren (groin)"
+    - "Najee Harris (Achilles, committee)"
+    - "Breece Hall (groin, likely OK)"
+  boosts:  # Beneficiaries of others' injuries — OVER lean
+    - "Jahmyr Gibbs (Montgomery gone, sole workhorse)"
+    - "Nico Collins (Higgins ACL, more targets)"
