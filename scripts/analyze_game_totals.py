@@ -61,79 +61,115 @@ def get_dome_teams():
     return domes
 
 
-def analyze_game(home, away, total_line, dome_teams, is_division=False, abs_spread=0, temp=None):
+# 2026 new head coaches (source: coaching_changes_2026.yaml) — 69% under historically
+NEW_HC_2026 = {"BAL", "BUF", "LV", "MIA", "PIT", "TEN", "NYJ", "NYG"}
+
+
+def analyze_game(home, away, total_line, dome_teams, is_division=False,
+                 abs_spread=0, home_favored=False, kickoff_hour_et=None, temp=None):
     """
-    Return (pick, confidence, score, reason) for a single game total.
-    Scoring is grounded in historical Week 1 totals data (2021-2025, 80 games).
-    Positive score = OVER lean, negative = UNDER lean.
+    CONSENSUS model: every layer with a historical Week 1 signal votes
+    UNDER (-1), OVER (+1), or neutral (0). Conviction = how many layers agree.
+    Each vote is tagged with its historical hit rate.
     """
     home_ab = NAME_TO_ABBR.get(home, home)
     away_ab = NAME_TO_ABBR.get(away, away)
 
-    score = 0
-    reasons = []
+    votes = []  # (layer_name, direction, note)
 
-    # --- PRIMARY: total-line bucket (the strongest historical signal) ---
+    # 1. Total line bucket
     if total_line <= 42:
-        # Low totals: NO under edge (historically +2.2 margin, ~57% but goes over)
-        reasons.append(f"low total ({total_line}) — no historical Week 1 edge, PASS")
-        # score stays neutral
+        votes.append(("total_line", 0, f"low total {total_line} — no edge"))
     elif total_line <= 47:
-        score -= 2
-        reasons.append(f"mid total ({total_line}) — 67% under historically")
+        votes.append(("total_line", -1, f"mid total {total_line} (67% U)"))
     elif total_line <= 49.5:
-        score -= 3
-        reasons.append(f"high total ({total_line}) — 73% under (sweet spot)")
-    else:  # 50+
-        score += 2
-        reasons.append(f"very high total ({total_line}) — 55% OVER historically (+3.9 margin)")
+        votes.append(("total_line", -1, f"high total {total_line} (73% U)"))
+    else:
+        votes.append(("total_line", +1, f"very high total {total_line} (55% O)"))
 
-    # --- Division games: 70% under ---
+    # 2. Roof (outdoors 67% U; dome/closed ~56% no edge)
+    if home_ab in dome_teams:
+        votes.append(("roof", 0, "indoor (no edge, 56%)"))
+    else:
+        votes.append(("roof", -1, "outdoors (67% U)"))
+
+    # 3. Division (70% U)
     if is_division:
-        score -= 1
-        reasons.append("division game (70% under)")
+        votes.append(("division", -1, "division game (70% U)"))
+    else:
+        votes.append(("division", 0, "non-division"))
 
-    # --- Big favorite (7+): 70% under (blowout, starters pulled) ---
+    # 4. Spread size (moderate 3.5-6.5 = 67%, big 7+ = 70%; close <=3 no edge)
     if abs_spread >= 7:
-        score -= 1
-        reasons.append(f"big spread ({abs_spread}) — blowout risk, 70% under")
+        votes.append(("spread", -1, f"big fav {abs_spread} (70% U)"))
+    elif abs_spread > 3:
+        votes.append(("spread", -1, f"moderate spread {abs_spread} (67% U)"))
+    else:
+        votes.append(("spread", 0, f"close spread {abs_spread} (no edge)"))
 
-    # --- Hot weather (80F+): 69% under ---
-    if temp is not None and temp >= 80:
-        score -= 1
-        reasons.append(f"hot ({int(temp)}F) — 69% under")
+    # 5. New head coach (69% U)
+    new_hcs = [t for t in (home_ab, away_ab) if t in NEW_HC_2026]
+    if new_hcs:
+        votes.append(("new_coach", -1, f"new HC: {','.join(new_hcs)} (69% U)"))
+    else:
+        votes.append(("new_coach", 0, "no coaching change"))
 
-    # --- Coaching disruption (secondary) ---
-    disrupted = [t for t in (home_ab, away_ab) if t in HIGH_DISRUPTION]
-    if len(disrupted) == 2:
-        score -= 1
-        reasons.append("both offenses disrupted (new scheme)")
+    # 6. Kickoff slot (early 1pm = 71% U; primetime = 47% = OVER lean)
+    if kickoff_hour_et is not None:
+        if kickoff_hour_et <= 13:
+            votes.append(("slot", -1, "1pm ET kickoff (71% U)"))
+        elif kickoff_hour_et >= 18:
+            votes.append(("slot", +1, "primetime (47% U = over lean)"))
+        else:
+            votes.append(("slot", 0, "late afternoon (no edge)"))
 
-    # --- Key injuries ---
+    # 7. Home/away favorite (home fav 69% U; away fav 56% no edge)
+    if home_favored:
+        votes.append(("favorite", -1, "home favorite (69% U)"))
+    else:
+        votes.append(("favorite", 0, "away favorite (56%, weak)"))
+
+    # 8. Hot weather (80F+, 69% U) — only if we have a forecast
+    if temp is not None and temp >= 80 and home_ab not in dome_teams:
+        votes.append(("weather", -1, f"hot {int(temp)}F (69% U)"))
+
+    # 9. Key injuries (not a historical layer but material)
     for t in (home_ab, away_ab):
         if t in INJURY_UNDER_TEAMS:
-            score -= 1
-            reasons.append(INJURY_UNDER_TEAMS[t])
+            votes.append(("injury", -1, INJURY_UNDER_TEAMS[t]))
 
-    # Decide pick
-    if score <= -1:
+    # Tally
+    under_votes = sum(1 for _, d, _ in votes if d == -1)
+    over_votes = sum(1 for _, d, _ in votes if d == +1)
+    net = over_votes - under_votes  # negative = under
+
+    if under_votes > 0 and over_votes == 0:
         pick = "UNDER"
-    elif score >= 1:
+    elif over_votes > 0 and under_votes == 0:
         pick = "OVER"
+    elif under_votes > over_votes:
+        pick = "UNDER (mixed)"
+    elif over_votes > under_votes:
+        pick = "OVER (mixed)"
     else:
         pick = "PASS"
 
-    strength = abs(score)
-    if strength >= 4:
-        conf = "STRONG LEAN"
-    elif strength >= 3:
+    # Conviction = agreement strength
+    agree = max(under_votes, over_votes)
+    conflict = min(under_votes, over_votes)
+    if conflict == 0 and agree >= 5:
+        conf = "STRONG"
+    elif conflict == 0 and agree >= 3:
         conf = "LEAN"
-    elif strength >= 2:
+    elif agree - conflict >= 3:
+        conf = "LEAN"
+    elif agree - conflict >= 2:
         conf = "SLIGHT LEAN"
     else:
-        conf = "COIN FLIP / PASS"
+        conf = "PASS / COIN FLIP"
 
-    return pick, conf, score, "; ".join(reasons)
+    summary = f"{under_votes}U/{over_votes}O layers | " + "; ".join(n for _, _, n in votes)
+    return pick, conf, net, summary
 
 
 def main(target_date="2026-09-13"):
@@ -182,6 +218,21 @@ def main(target_date="2026-09-13"):
                 return True
         return False
 
+    # Home-favorite lookup: spread point on the home team's row (negative = favored)
+    home_fav_map = {}
+    kickoff_map = {}
+    for _, s in spreads.iterrows():
+        if s.get("outcome_name") == s.get("home_team"):
+            pt = s.get("outcome_point")
+            if pt is not None:
+                home_fav_map[s["game_id"]] = pt < 0  # negative spread = favored
+    for _, row in totals.iterrows():
+        ct = row.get("commence_time")
+        if ct is not None:
+            # commence_time is UTC; ET = UTC-4 (Sept, EDT)
+            hour_et = (pd.to_datetime(ct).hour - 4) % 24
+            kickoff_map[row["game_id"]] = hour_et
+
     results = []
     for _, row in totals.iterrows():
         home, away = row["home_team"], row["away_team"]
@@ -192,9 +243,12 @@ def main(target_date="2026-09-13"):
         away_ab = NAME_TO_ABBR.get(away, away)
         is_div = same_div(home_ab, away_ab)
         abs_spread = spread_map.get(row["game_id"], 0)
+        home_favored = home_fav_map.get(row["game_id"], False)
+        kickoff_hour = kickoff_map.get(row["game_id"])
         pick, conf, score, reason = analyze_game(
             home, away, line, dome_teams,
-            is_division=is_div, abs_spread=abs_spread, temp=None,
+            is_division=is_div, abs_spread=abs_spread,
+            home_favored=home_favored, kickoff_hour_et=kickoff_hour, temp=None,
         )
         results.append({
             "matchup": f"{away_ab} @ {home_ab}",
@@ -209,11 +263,21 @@ def main(target_date="2026-09-13"):
     df = pd.DataFrame(results).sort_values("score", key=abs, ascending=False)
 
     # Output
-    print(f"\n{len(df)} games analyzed. Picks ranked by conviction:\n")
-    print(f"{'Matchup':<14} {'Total':>6} {'Pick':<11} {'Conf':<12} Reason")
-    print("-" * 78)
+    print(f"\n{len(df)} games analyzed. Ranked by layer consensus:\n")
+    print(f"{'Matchup':<14} {'Total':>6} {'Pick':<14} {'Conf':<10} Layer tally")
+    print("-" * 90)
     for _, r in df.iterrows():
-        print(f"{r['matchup']:<14} {r['total']:>6.1f} {r['pick']:<11} {r['confidence']:<12} {r['reason'][:60]}")
+        tally = r["reason"].split(" | ")[0]  # the "XU/YO layers" part
+        print(f"{r['matchup']:<14} {r['total']:>6.1f} {r['pick']:<14} {r['confidence']:<10} {tally}")
+
+    # Detail of layers for the strongest plays
+    print("\n" + "-" * 90)
+    print("LAYER DETAIL (top plays):")
+    for _, r in df.head(6).iterrows():
+        print(f"\n  {r['matchup']} — {r['pick']} {r['total']} [{r['confidence']}]")
+        layers = r["reason"].split(" | ", 1)[1].split("; ")
+        for lyr in layers:
+            print(f"     - {lyr}")
 
     # Parlay math reality check
     n = len(df)
