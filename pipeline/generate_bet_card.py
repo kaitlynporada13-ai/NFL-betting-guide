@@ -47,7 +47,7 @@ def is_low_line(market: str, line: float) -> bool:
 
 def get_current_week() -> int:
     """Estimate current NFL week based on date."""
-    season_start = date(2026, 9, 5)  # Week 1 Thursday
+    season_start = date(2026, 9, 10)  # Week 1 Thursday (Sunday slate is Sep 13)
     today = date.today()
     if today < season_start:
         # Preseason: if within ~4 weeks of kickoff, Week 1 props are live — treat as Week 1
