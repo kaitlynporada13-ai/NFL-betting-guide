@@ -61,55 +61,79 @@ def get_dome_teams():
     return domes
 
 
-def analyze_game(home, away, total_line, dome_teams):
-    """Return (pick, confidence, score, reason) for a single game total."""
+def analyze_game(home, away, total_line, dome_teams, is_division=False, abs_spread=0, temp=None):
+    """
+    Return (pick, confidence, score, reason) for a single game total.
+    Scoring is grounded in historical Week 1 totals data (2021-2025, 80 games).
+    Positive score = OVER lean, negative = UNDER lean.
+    """
     home_ab = NAME_TO_ABBR.get(home, home)
     away_ab = NAME_TO_ABBR.get(away, away)
 
-    score = 0  # positive = OVER lean, negative = UNDER lean
+    score = 0
     reasons = []
 
-    # Coaching disruption (both teams) -> UNDER
+    # --- PRIMARY: total-line bucket (the strongest historical signal) ---
+    if total_line <= 42:
+        # Low totals: NO under edge (historically +2.2 margin, ~57% but goes over)
+        reasons.append(f"low total ({total_line}) — no historical Week 1 edge, PASS")
+        # score stays neutral
+    elif total_line <= 47:
+        score -= 2
+        reasons.append(f"mid total ({total_line}) — 67% under historically")
+    elif total_line <= 49.5:
+        score -= 3
+        reasons.append(f"high total ({total_line}) — 73% under (sweet spot)")
+    else:  # 50+
+        score += 2
+        reasons.append(f"very high total ({total_line}) — 55% OVER historically (+3.9 margin)")
+
+    # --- Division games: 70% under ---
+    if is_division:
+        score -= 1
+        reasons.append("division game (70% under)")
+
+    # --- Big favorite (7+): 70% under (blowout, starters pulled) ---
+    if abs_spread >= 7:
+        score -= 1
+        reasons.append(f"big spread ({abs_spread}) — blowout risk, 70% under")
+
+    # --- Hot weather (80F+): 69% under ---
+    if temp is not None and temp >= 80:
+        score -= 1
+        reasons.append(f"hot ({int(temp)}F) — 69% under")
+
+    # --- Coaching disruption (secondary) ---
     disrupted = [t for t in (home_ab, away_ab) if t in HIGH_DISRUPTION]
     if len(disrupted) == 2:
-        score -= 2
-        reasons.append("both offenses have major coaching disruption")
-    elif len(disrupted) == 1:
         score -= 1
-        reasons.append(f"{disrupted[0]} offense disrupted (new scheme)")
+        reasons.append("both offenses disrupted (new scheme)")
 
-    # Key injuries -> UNDER
+    # --- Key injuries ---
     for t in (home_ab, away_ab):
         if t in INJURY_UNDER_TEAMS:
             score -= 1
             reasons.append(INJURY_UNDER_TEAMS[t])
 
-    # Dome -> slight OVER
-    if home_ab in dome_teams:
-        score += 1
-        reasons.append("dome game (clean conditions)")
+    # Decide pick
+    if score <= -1:
+        pick = "UNDER"
+    elif score >= 1:
+        pick = "OVER"
+    else:
+        pick = "PASS"
 
-    # Continuity offenses -> slight OVER tolerance
-    continuity = [t for t in (home_ab, away_ab) if t in CONTINUITY_OFFENSE]
-    if len(continuity) == 2:
-        score += 1
-        reasons.append("both offenses have continuity")
-
-    # Week 1 baseline UNDER lean (players rusty, our documented tendency)
-    score -= 1
-    reasons.append("Week 1 rust (documented under tendency)")
-
-    pick = "UNDER" if score < 0 else "OVER" if score > 0 else "LEAN UNDER"
     strength = abs(score)
-    if strength >= 3:
+    if strength >= 4:
+        conf = "STRONG LEAN"
+    elif strength >= 3:
         conf = "LEAN"
-    elif strength == 2:
+    elif strength >= 2:
         conf = "SLIGHT LEAN"
     else:
-        conf = "COIN FLIP"
+        conf = "COIN FLIP / PASS"
 
-    reason = "; ".join(reasons)
-    return pick, conf, score, reason
+    return pick, conf, score, "; ".join(reasons)
 
 
 def main(target_date="2026-09-13"):
@@ -134,8 +158,29 @@ def main(target_date="2026-09-13"):
         print("\nRunning on ALL available games instead:")
         slate = odds
 
-    # Get totals (Over rows carry the line)
+    # Get totals (Over rows carry the line) and spreads for context
     totals = slate[(slate["market"] == "totals") & (slate["outcome_name"] == "Over")]
+    spreads = slate[slate["market"] == "spreads"]
+    # Map game_id -> abs spread
+    spread_map = {}
+    for _, s in spreads.iterrows():
+        pt = s.get("outcome_point")
+        if pt is not None:
+            gid = s["game_id"]
+            spread_map[gid] = max(spread_map.get(gid, 0), abs(pt))
+
+    # Division lookup
+    divisions = {
+        "AFCE": {"BUF", "MIA", "NE", "NYJ"}, "AFCN": {"BAL", "CIN", "CLE", "PIT"},
+        "AFCS": {"HOU", "IND", "JAX", "TEN"}, "AFCW": {"DEN", "KC", "LAC", "LV"},
+        "NFCE": {"DAL", "NYG", "PHI", "WAS"}, "NFCN": {"CHI", "DET", "GB", "MIN"},
+        "NFCS": {"ATL", "CAR", "NO", "TB"}, "NFCW": {"ARI", "LAR", "SEA", "SF"},
+    }
+    def same_div(a, b):
+        for teams in divisions.values():
+            if a in teams and b in teams:
+                return True
+        return False
 
     results = []
     for _, row in totals.iterrows():
@@ -143,9 +188,16 @@ def main(target_date="2026-09-13"):
         line = row.get("outcome_point")
         if line is None:
             continue
-        pick, conf, score, reason = analyze_game(home, away, line, dome_teams)
+        home_ab = NAME_TO_ABBR.get(home, home)
+        away_ab = NAME_TO_ABBR.get(away, away)
+        is_div = same_div(home_ab, away_ab)
+        abs_spread = spread_map.get(row["game_id"], 0)
+        pick, conf, score, reason = analyze_game(
+            home, away, line, dome_teams,
+            is_division=is_div, abs_spread=abs_spread, temp=None,
+        )
         results.append({
-            "matchup": f"{NAME_TO_ABBR.get(away, away)} @ {NAME_TO_ABBR.get(home, home)}",
+            "matchup": f"{away_ab} @ {home_ab}",
             "total": line, "pick": pick, "confidence": conf,
             "score": score, "reason": reason,
         })
