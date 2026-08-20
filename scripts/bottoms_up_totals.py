@@ -127,22 +127,34 @@ def validate_week1(tw):
         })
     v = pd.DataFrame(rows)
     v["correct"] = v["proj_says"] == v["result"]
+    v["proj_vs_line"] = (v["proj"] - v["line"]).round(1)
 
-    print("=" * 78)
-    print(f"VALIDATION — bottoms-up projection vs Week 1 result ({len(v)} games, 2022-25)")
-    print("=" * 78)
-    print(f"\nProjection-vs-line directional accuracy: {v['correct'].mean()*100:.1f}%  "
-          f"({v['correct'].sum()}/{len(v)})")
-    print(f"Always-under baseline:                   {(v['result']=='UNDER').mean()*100:.1f}%")
-    # Correlation of projection with actual
+    print("=" * 92)
+    print(f"VALIDATION DETAIL — every Week 1 game 2022-25: projection vs line vs actual")
+    print("=" * 92)
+    print(f"{'Season':<7}{'Matchup':<12}{'Line':>6}{'Proj':>7}{'Actual':>8}{'ProjSays':>10}{'Result':>8}{'Hit':>5}")
+    print("-" * 92)
+    for _, r in v.sort_values(["season", "matchup"]).iterrows():
+        hit = "OK" if r["correct"] else "X"
+        print(f"{int(r['season']):<7}{r['matchup']:<12}{r['line']:>6.1f}{r['proj']:>7.1f}"
+              f"{int(r['actual']):>8}{r['proj_says']:>10}{r['result']:>8}{hit:>5}")
+
+    v.to_csv(Path(__file__).parent.parent / "data" / "processed" / "bottoms_up_validation.csv", index=False)
+
+    print("\n" + "=" * 92)
+    print("SCORECARD")
+    print("=" * 92)
+    print(f"  Projection's over/under call was right: {v['correct'].mean()*100:.1f}%  "
+          f"({v['correct'].sum()}/{len(v)} games)")
+    print(f"  If you'd just bet UNDER every game:      {(v['result']=='UNDER').mean()*100:.1f}%")
     corr = np.corrcoef(v["proj"], v["actual"])[0, 1]
-    print(f"Correlation(projected total, actual total): {corr:.3f}  (0 = useless, 1 = perfect)")
-    # When projection disagrees strongly with line (>=4 pts), is it right?
+    print(f"  Correlation(projected total, actual):    {corr:.3f}  (1.0 = perfect, 0 = random)")
     v["edge"] = (v["proj"] - v["line"]).abs()
     strong = v[v["edge"] >= 4]
     if len(strong):
-        print(f"\nWhen projection differs from line by 4+ pts ({len(strong)} games): "
-              f"{strong['correct'].mean()*100:.1f}% correct")
+        print(f"  When projection differs from line 4+ pts ({len(strong)} games): "
+              f"{strong['correct'].mean()*100:.1f}% right")
+    print("  Saved full table: data/processed/bottoms_up_validation.csv")
     return v, coef, tw
 
 
