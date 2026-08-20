@@ -36,13 +36,16 @@ def _import_weekly_data_with_fallback(seasons: list[int]) -> pd.DataFrame:
         url = NFLVERSE_STATS_URL.format(year=year)
         try:
             df = pd.read_parquet(url)
-            # Normalize column names to match legacy format
+            # The new nflverse stats_player format renamed several columns.
+            # Map them back to the legacy names the rest of the pipeline expects.
             col_renames = {
-                "player_display_name": "player_display_name",
-                "player_name": "player_name",
-                "recent_team": "recent_team",
+                "team": "recent_team",
+                "opponent_team": "opponent",
+                "passing_interceptions": "interceptions",
+                "sacks_suffered": "sacks",
+                "sack_yards_lost": "sack_yards",
             }
-            # The new format has same column names mostly
+            df = df.rename(columns={k: v for k, v in col_renames.items() if k in df.columns})
             dfs.append(df)
             print(f"  Pulled {year} from nflverse-data: {len(df)} rows")
         except Exception as e:
@@ -141,7 +144,7 @@ def pull_player_stats(seasons: list[int] | None = None) -> pd.DataFrame:
     # Key columns for prop modeling
     cols = [
         "player_id", "player_name", "player_display_name", "position",
-        "recent_team", "season", "week",
+        "recent_team", "opponent", "season", "week",
         # Passing
         "completions", "attempts", "passing_yards", "passing_tds",
         "interceptions", "sacks", "sack_yards",
