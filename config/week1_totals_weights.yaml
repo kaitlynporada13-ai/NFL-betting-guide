@@ -1,0 +1,30 @@
+baseline_under_pct: 63.7
+layer_weights:
+  total_line:
+    low: -4.6
+    mid: 3.8
+    high: 7.2
+    very_high: -10.0
+  roof:
+    outdoors: 3.0
+    indoor: -6.6
+  division:
+    'yes': 6.7
+    'no': -3.3
+  spread:
+    close: -4.9
+    moderate: 3.0
+    big: 3.1
+  new_coach:
+    'yes': 5.3
+    'no': -2.9
+  slot:
+    early: 7.7
+    afternoon: -1.8
+    primetime: -14.1
+  favorite:
+    home: 5.0
+    away: -7.5
+  weather:
+    hot: 3.6
+    mild: -7.8

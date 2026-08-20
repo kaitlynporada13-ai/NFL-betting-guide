@@ -44,81 +44,97 @@ def load_week1():
     return wk1
 
 
-def rpt(label, df):
+BASELINE_UNDER = 63.7  # overall Week 1 under rate 2021-2025
+
+# Collect computed lifts here for saving to the weights file
+LAYER_WEIGHTS = {}
+
+
+def rpt(label, df, layer=None, value=None):
     o = (df["result"] == "OVER").sum()
     u = (df["result"] == "UNDER").sum()
     dec = o + u
     if dec == 0:
         return
     up = u / dec * 100
+    lift = up - BASELINE_UNDER  # + = more under than baseline, - = relative OVER
+    # Reliability: shrink lift toward 0 for small samples (regularization)
+    reliability = min(dec / 20.0, 1.0)  # full weight at n>=20
+    weighted_lift = lift * reliability
+    direction = "UNDER" if weighted_lift > 3 else "OVER" if weighted_lift < -3 else "neutral"
     tag = ""
     if dec >= 8:
-        if up >= 62:
-            tag = " <-- UNDER signal"
-        elif up <= 38:
-            tag = " <-- OVER signal"
-    print(f"  {label:<32} n={len(df):<3} U{u:>2}-O{o:<2} ({up:>5.1f}% U) marg {df['margin'].mean():+5.1f}{tag}")
+        if weighted_lift > 3:
+            tag = f" <-- UNDER (+{weighted_lift:.0f} lift)"
+        elif weighted_lift < -3:
+            tag = f" <-- OVER ({weighted_lift:.0f} lift)"
+    print(f"  {label:<30} n={len(df):<3} {up:>5.1f}%U  lift {lift:+5.1f}  wt {weighted_lift:+5.1f}{tag}")
+    if layer and value:
+        LAYER_WEIGHTS.setdefault(layer, {})[value] = float(round(weighted_lift, 1))
 
 
 def main():
+    import yaml
     wk1 = load_week1()
-    print("=" * 82)
-    print(f"WEEK 1 TOTALS — LAYER-BY-LAYER SIGNAL TEST ({len(wk1)} games, 2021-2025)")
-    print("Baseline: 63.7% under overall. A layer matters if it moves meaningfully off that.")
-    print("=" * 82)
+    wk1["abs_spread"] = wk1["spread_line"].abs()
+    wk1["hour"] = pd.to_datetime(wk1["gametime"], format="%H:%M", errors="coerce").dt.hour
+
+    print("=" * 88)
+    print(f"WEEK 1 TOTALS — WEIGHTED LAYER ANALYSIS ({len(wk1)} games, 2021-2025)")
+    print(f"Baseline: {BASELINE_UNDER}% under. Weight = (layer under% - baseline) x reliability.")
+    print("  Positive weight = UNDER push. Negative weight = OVER push (vs a typical Wk1 game).")
+    print("=" * 88)
 
     print("\n[TOTAL LINE LEVEL]")
-    rpt("Low (<=42)", wk1[wk1["total_line"] <= 42])
-    rpt("Mid (42.5-47)", wk1[(wk1["total_line"] > 42) & (wk1["total_line"] <= 47)])
-    rpt("High (47.5-49.5)", wk1[(wk1["total_line"] > 47) & (wk1["total_line"] <= 49.5)])
-    rpt("Very high (50+)", wk1[wk1["total_line"] >= 50])
+    rpt("Low (<=42)", wk1[wk1["total_line"] <= 42], "total_line", "low")
+    rpt("Mid (42.5-47)", wk1[(wk1["total_line"] > 42) & (wk1["total_line"] <= 47)], "total_line", "mid")
+    rpt("High (47.5-49.5)", wk1[(wk1["total_line"] > 47) & (wk1["total_line"] <= 49.5)], "total_line", "high")
+    rpt("Very high (50+)", wk1[wk1["total_line"] >= 50], "total_line", "very_high")
 
     print("\n[ROOF]")
-    rpt("Outdoors", wk1[wk1["roof"] == "outdoors"])
-    rpt("Dome", wk1[wk1["roof"] == "dome"])
-    rpt("Closed (retractable shut)", wk1[wk1["roof"] == "closed"])
-    rpt("Any indoor (dome+closed)", wk1[wk1["roof"].isin(["dome", "closed"])])
+    rpt("Outdoors", wk1[wk1["roof"] == "outdoors"], "roof", "outdoors")
+    rpt("Indoor (dome+closed)", wk1[wk1["roof"].isin(["dome", "closed"])], "roof", "indoor")
 
     print("\n[DIVISION]")
-    rpt("Division game", wk1[wk1["div_game"] == True])
-    rpt("Non-division", wk1[wk1["div_game"] == False])
+    rpt("Division game", wk1[wk1["div_game"] == True], "division", "yes")
+    rpt("Non-division", wk1[wk1["div_game"] == False], "division", "no")
 
     print("\n[SPREAD SIZE]")
-    wk1["abs_spread"] = wk1["spread_line"].abs()
-    rpt("Pick'em / close (<=3)", wk1[wk1["abs_spread"] <= 3])
-    rpt("Moderate (3.5-6.5)", wk1[(wk1["abs_spread"] > 3) & (wk1["abs_spread"] <= 6.5)])
-    rpt("Big fav (7+)", wk1[wk1["abs_spread"] >= 7])
+    rpt("Close (<=3)", wk1[wk1["abs_spread"] <= 3], "spread", "close")
+    rpt("Moderate (3.5-6.5)", wk1[(wk1["abs_spread"] > 3) & (wk1["abs_spread"] <= 6.5)], "spread", "moderate")
+    rpt("Big fav (7+)", wk1[wk1["abs_spread"] >= 7], "spread", "big")
 
     print("\n[NEW HEAD COACH]")
-    rpt("Any team new coach", wk1[wk1["any_new_coach"]])
-    rpt("Both teams new coach", wk1[wk1["both_new_coach"]])
-    rpt("No coaching change", wk1[~wk1["any_new_coach"]])
+    rpt("Any team new coach", wk1[wk1["any_new_coach"]], "new_coach", "yes")
+    rpt("No coaching change", wk1[~wk1["any_new_coach"]], "new_coach", "no")
 
-    print("\n[WEEKDAY / SLOT]")
-    if "weekday" in wk1.columns:
-        for d in wk1["weekday"].dropna().unique():
-            rpt(f"{d}", wk1[wk1["weekday"] == d])
+    print("\n[KICKOFF SLOT]")
+    rpt("Early (<=13 ET)", wk1[wk1["hour"] <= 13], "slot", "early")
+    rpt("Afternoon (14-17)", wk1[(wk1["hour"] >= 14) & (wk1["hour"] <= 17)], "slot", "afternoon")
+    rpt("Primetime (18+)", wk1[wk1["hour"] >= 18], "slot", "primetime")
 
-    print("\n[PRIMETIME (kickoff hour)]")
-    if "gametime" in wk1.columns:
-        wk1["hour"] = pd.to_datetime(wk1["gametime"], format="%H:%M", errors="coerce").dt.hour
-        rpt("Early (<=13:00 ET)", wk1[wk1["hour"] <= 13])
-        rpt("Late afternoon (14-17)", wk1[(wk1["hour"] >= 14) & (wk1["hour"] <= 17)])
-        rpt("Primetime (18:00+)", wk1[wk1["hour"] >= 18])
+    print("\n[FAVORITE LOCATION]")
+    rpt("Home favored", wk1[wk1["spread_line"] > 0], "favorite", "home")
+    rpt("Away favored", wk1[wk1["spread_line"] < 0], "favorite", "away")
 
     print("\n[WEATHER — outdoor only]")
     out = wk1[wk1["roof"] == "outdoors"]
-    rpt("Hot (>=80F)", out[out["temp"] >= 80])
-    rpt("Warm (70-79F)", out[(out["temp"] >= 70) & (out["temp"] < 80)])
-    rpt("Mild (<70F)", out[out["temp"] < 70])
-    rpt("Windy (>=12mph)", out[out["wind"] >= 12])
+    rpt("Hot (>=80F)", out[out["temp"] >= 80], "weather", "hot")
+    rpt("Mild (<70F)", out[out["temp"] < 70], "weather", "mild")
 
-    print("\n[HOME FAVORITE vs AWAY FAVORITE]")
-    rpt("Home favored", wk1[wk1["spread_line"] > 0])
-    rpt("Away favored", wk1[wk1["spread_line"] < 0])
+    # Save computed weights for the game model to consume
+    weights_path = Path(__file__).parent.parent / "config" / "week1_totals_weights.yaml"
+    with open(weights_path, "w") as f:
+        yaml.dump({"baseline_under_pct": BASELINE_UNDER, "layer_weights": LAYER_WEIGHTS},
+                  f, default_flow_style=False, sort_keys=False)
 
-    print("\n" + "=" * 82)
-    print("Use layers tagged with a signal (n>=8) in the consensus model.")
+    print("\n" + "=" * 88)
+    print("WEIGHTS (sorted strongest to weakest):")
+    flat = [(f"{lyr}.{val}", w) for lyr, vals in LAYER_WEIGHTS.items() for val, w in vals.items()]
+    for name, w in sorted(flat, key=lambda x: abs(x[1]), reverse=True):
+        direction = "UNDER" if w > 0 else "OVER" if w < 0 else "neutral"
+        print(f"  {name:<24} {w:+6.1f}  {direction}")
+    print(f"\nSaved weights to {weights_path}")
 
 
 if __name__ == "__main__":
