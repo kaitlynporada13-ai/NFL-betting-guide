@@ -1,0 +1,49 @@
+# Depth-chart / role-change overrides for the projection engine.
+# When a starter is injured, the player behind them gets a bigger role.
+# Their prior-season baseline UNDERSTATES their new usage, so:
+#   - the "inflated line -> under" signal is FALSE (line is high because role grew)
+#   - they may instead be an OVER candidate (volume boost the market just priced in)
+# The engine flags these as ROLE-CHANGE: do not trust the under; lean over-risk.
+#
+# Keep this updated weekly as injuries develop. Format:
+#   role_up:  players whose usage increased (someone ahead is hurt)
+#   role_down: players whose usage decreased (rare; makes under stronger)
+# ============================================================================
+
+updated: "2026-08-25"
+
+role_up:
+  - player: "George Holani"
+    team: SEA
+    reason: "Charbonnet (ACL, PUP) out first 4+ games; Holani is #2 RB behind Walker"
+  - player: "Jadarian Price"
+    team: SEA
+    reason: "Rookie 1st-rounder; elevated in committee with Charbonnet (ACL) out"
+  - player: "Kendre Miller"
+    team: NO
+    reason: "Kamara (MCL) out ~1 month; lead-back volume available"
+  - player: "Devin Neal"
+    team: NO
+    reason: "Rookie; committee carries with Kamara (MCL) out"
+  - player: "Cam Akers"
+    team: NO
+    reason: "Veteran depth; snaps up with Kamara (MCL) out"
+
+# Players whose receiving role grows because a pass-catcher ahead is out
+role_up_receivers:
+  - player: "Rashid Shaheed"
+    team: NO
+    reason: "Jordyn Tyson (hamstring) out; more target share available"
+  - player: "Brandin Cooks"
+    team: NO
+    reason: "Tyson out; veteran WR sees more targets"
+
+# Players whose role SHRANK (baseline overstates -> under even stronger)
+role_down: []
+
+notes:
+  - "This is CURRENT-INFORMATION judgment, not a backtested pattern."
+  - "Week 1 validation found NO historical over edge — but injury-driven volume is"
+  - "a legitimate real-time exception the historical data cannot see."
+  - "For role_up players: DO NOT bet the under off a stale-low baseline. The line is"
+  - "high for a reason. If anything they are over-risk; bet unders elsewhere."

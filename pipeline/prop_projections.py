@@ -67,12 +67,40 @@ def load_baselines():
     return base
 
 
+def load_role_changes():
+    """Players whose role changed due to an injury ahead of them (baseline stale)."""
+    import yaml
+    path = Path(__file__).parent.parent / "data" / "human_notes" / "depth_chart_overrides_2026.yaml"
+    role_up, reasons = set(), {}
+    if path.exists():
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        for key in ("role_up", "role_up_receivers"):
+            for entry in data.get(key, []):
+                pk = entry["player"].lower().replace(".", "").strip()
+                role_up.add(pk)
+                reasons[pk] = entry.get("reason", "")
+    return role_up, reasons
+
+
 # Week 1 rust discount applied to the baseline to form the PROJECTION.
 # Offenses score below their full-season talent in openers (validated: unders win).
 RUST_DISCOUNT = {
     "player_pass_tds": 0.82, "player_pass_yds": 0.90, "player_rush_yds": 0.88,
     "player_receptions": 0.92, "player_reception_yds": 0.90,
 }
+
+# Minimum line for a prop to be a "meaningful volume" starter play. Below these,
+# the player is a backup/low-usage role: the % inflation looks huge but the edge
+# is thin and noisy (FanDuel prices low lines tightly). Flag + cap confidence.
+STARTER_MIN_LINE = {
+    "player_pass_yds": 175, "player_pass_tds": 0.5, "player_rush_yds": 30,
+    "player_receptions": 3.5, "player_reception_yds": 35,
+}
+
+
+def is_backup_line(market, line):
+    return line < STARTER_MIN_LINE.get(market, 0)
 
 
 def confidence_label(hit):
@@ -95,6 +123,7 @@ def build_projections():
 
     props = props[props["market"].isin(MARKET_STAT) & (props["outcome_name"] == "Over")].copy()
     baselines = load_baselines()
+    role_up, role_reasons = load_role_changes()
 
     rows = []
     for _, p in props.iterrows():
@@ -105,6 +134,7 @@ def build_projections():
         name = p.get("player_name", "")
         pkey = name.lower().replace(".", "").strip()
         baseline = baselines.get(market, {}).get(pkey)
+        role_changed = pkey in role_up
 
         # Projection = rust-discounted baseline (what we expect in a Week 1 opener)
         if baseline is not None and baseline > 0:
@@ -115,13 +145,35 @@ def build_projections():
             infl_pct = None
 
         hit = inflation_hit(market, infl_pct)
-        # Week 1 is under-only; call is UNDER, confidence = validated hit rate
-        call = "UNDER"
-        conf = confidence_label(hit)
+
+        # Guardrail: backup / low-volume lines. The % inflation is misleading on
+        # tiny lines, so ignore inflation and cap confidence at MEDIUM.
+        backup = is_backup_line(market, line)
+        if backup:
+            hit = min(BASE_UNDER.get(market, 0.50), 0.55)  # strip inflation bonus, cap
+
+        # Role-change override: player promoted because someone ahead is hurt.
+        # Their 2025 baseline understates their new role -> the inflated-line "under"
+        # signal is FALSE. Do NOT call a confident under; flag as over-risk.
+        if role_changed:
+            call = "AVOID (role change)"
+            conf = "ROLE-CHANGE"
+            hit = None
+        else:
+            # Week 1 is under-only; call is UNDER, confidence = validated hit rate
+            call = "UNDER"
+            conf = confidence_label(hit)
 
         # Build the "why"
         mk = MARKET_LABEL[market]
-        if baseline is not None:
+        if role_changed:
+            rsn = role_reasons.get(pkey, "role increased due to injury ahead")
+            why = (f"ROLE CHANGE — {rsn}. His 2025 baseline understates the new role, so the "
+                   f"high line is NOT a real under (it's priced-in volume). Over-risk; bet unders elsewhere.")
+        elif backup:
+            why = (f"Low-volume/backup line ({line}) — % inflation is misleading on small "
+                   f"lines; base Week 1 {mk} under only ~{hit:.0%}. Thin edge, size down.")
+        elif baseline is not None:
             base_str = f"2025 avg {baseline:.1f}"
             if infl_pct is not None and infl_pct >= 0.05:
                 why = (f"Line {line} is {infl_pct:+.0%} above his {base_str}; "
@@ -138,12 +190,13 @@ def build_projections():
             "player": name, "market": mk, "market_key": market, "line": line,
             "projection": round(projection, 1) if projection is not None else None,
             "baseline_2025": round(baseline, 1) if baseline is not None else None,
-            "call": call, "confidence": conf, "hit_est": round(hit, 3),
-            "why": why,
+            "call": call, "confidence": conf,
+            "hit_est": round(hit, 3) if hit is not None else None,
+            "backup_line": backup, "role_change": role_changed, "why": why,
             "home_team": p.get("home_team", ""), "away_team": p.get("away_team", ""),
         })
 
-    df = pd.DataFrame(rows).sort_values("hit_est", ascending=False)
+    df = pd.DataFrame(rows).sort_values("hit_est", ascending=False, na_position="last")
     df.to_parquet(PROC / "prop_projections_latest.parquet", index=False)
     return df
 
