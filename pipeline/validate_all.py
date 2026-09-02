@@ -103,6 +103,37 @@ def check_inflation(g, results):
                     "status": status})
 
 
+def check_anytime_td(results):
+    """Anytime TD: heavy favorites (<= -200) betting YES should stay +EV; else -EV."""
+    props = pd.read_parquet(RAW / "historical_props_all.parquet")
+    td = props[props["market"] == "player_anytime_td"].copy()
+    td["pname"] = td["player_name"].str.lower().str.replace(".", "", regex=False).str.strip()
+    stats = pd.read_parquet(RAW / "player_stats_historical.parquet")
+    nc = "player_display_name" if "player_display_name" in stats.columns else "player_name"
+    stats["pname"] = stats[nc].str.lower().str.replace(".", "", regex=False).str.strip()
+    stats["td"] = stats.get("rushing_tds", 0).fillna(0) + stats.get("receiving_tds", 0).fillna(0)
+    m = td.merge(stats[["pname", "season", "week", "td"]], on=["pname", "season", "week"], how="inner")
+    m["scored"] = m["td"] >= 1
+
+    def yes_roi(df):
+        if len(df) == 0:
+            return None, 0
+        def r(row):
+            if row["scored"]:
+                return (row["price"] / 100) if row["price"] > 0 else (100 / -row["price"])
+            return -1
+        return df.apply(r, axis=1).mean() * 100, len(df)
+
+    fav = m[m["price"] <= -200]
+    tr_roi, _ = yes_roi(fav[fav["season"] <= 2024])
+    te_roi, n = yes_roi(fav[fav["season"] >= 2025])
+    status = "VALID" if (tr_roi and te_roi and tr_roi > 0 and te_roi > 0) else "DECAYED"
+    results.append({"edge": "Anytime TD YES: heavy fav (<=-200)",
+                    "train%": round(tr_roi, 1) if tr_roi else 0,
+                    "test%": round(te_roi, 1) if te_roi else 0,
+                    "test_n": int(n), "status": status})
+
+
 def main():
     print("=" * 78)
     print("WEEKLY EDGE HEALTH CHECK — every edge re-validated out-of-sample")
@@ -114,6 +145,7 @@ def main():
     check_inflation(g, results)
     check_totals(results)
     check_spreads(results)
+    check_anytime_td(results)
 
     df = pd.DataFrame(results)
     df.to_parquet(PROC / "edge_health.parquet", index=False)

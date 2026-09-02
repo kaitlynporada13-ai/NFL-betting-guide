@@ -113,5 +113,5 @@ if query:
         st.error(f"Lookup unavailable: {e}")
 
 st.markdown("---")
-st.caption("Sidebar — Props: Pass Yards · Pass TDs · Rush Yards · Receptions · Receiving Yards  |  "
+st.caption("Sidebar — Props: Pass Yards · Pass TDs · Rush Yards · Receptions · Receiving Yards · Anytime TD  |  "
            "Games: Game Totals · Spreads · Game Specials")
