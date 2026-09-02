@@ -147,18 +147,19 @@ def build_target_share_deltas(player_stats: pd.DataFrame = None) -> pd.DataFrame
 
     receivers = receivers.sort_values(["player_id", "season", "week"])
 
-    # Rolling target share
+    # Rolling target share — MUST shift(1) so the window uses only PRIOR games,
+    # otherwise the current week's target share leaks into the feature (target leakage).
     receivers["ts_roll3"] = (
         receivers.groupby("player_id")["target_share"]
-        .transform(lambda x: x.rolling(3, min_periods=2).mean())
+        .transform(lambda x: x.shift(1).rolling(3, min_periods=2).mean())
     )
     receivers["ts_roll5"] = (
         receivers.groupby("player_id")["target_share"]
-        .transform(lambda x: x.rolling(5, min_periods=3).mean())
+        .transform(lambda x: x.shift(1).rolling(5, min_periods=3).mean())
     )
     receivers["ts_roll_prev5"] = (
         receivers.groupby("player_id")["target_share"]
-        .transform(lambda x: x.shift(3).rolling(5, min_periods=3).mean())
+        .transform(lambda x: x.shift(4).rolling(5, min_periods=3).mean())
     )
 
     # Delta: recent vs previous window
@@ -175,7 +176,7 @@ def build_target_share_deltas(player_stats: pd.DataFrame = None) -> pd.DataFrame
 
     receivers["target_share_trend"] = (
         receivers.groupby("player_id")["target_share"]
-        .transform(lambda x: rolling_slope(x))
+        .transform(lambda x: rolling_slope(x.shift(1)))  # prior games only, no leakage
     )
 
     # Flags

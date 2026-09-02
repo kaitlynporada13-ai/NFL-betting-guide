@@ -200,35 +200,41 @@ def build_player_rolling_stats(player_stats: pd.DataFrame, windows: list[int] = 
 
     all_metrics = list(set(qb_metrics + rb_metrics + wr_te_metrics))
 
+    # CRITICAL: rolling windows MUST exclude the current week, otherwise the feature
+    # leaks the target (a roll that includes this week's stat is partly the answer).
+    # .shift(1) inside each player group makes every rolling value use ONLY prior games.
+    def prior_roll(series, window, how):
+        s = series.shift(1)  # drop current week before aggregating
+        r = s.rolling(window, min_periods=1)
+        return getattr(r, how)()
+
     for window in windows:
         for metric in all_metrics:
             if metric in df.columns:
-                col_name = f"{metric}_roll{window}"
-                df[col_name] = (
+                df[f"{metric}_roll{window}"] = (
                     df.groupby("player_id")[metric]
-                    .transform(lambda x: x.rolling(window, min_periods=1).mean())
+                    .transform(lambda x: prior_roll(x, window, "mean"))
                 )
 
-    # Consistency (std dev) — important for props
+    # Consistency (std dev) — important for props (prior games only)
     for window in [5, 10]:
         for metric in ["passing_yards", "rushing_yards", "receiving_yards", "receptions"]:
             if metric in df.columns:
-                col_name = f"{metric}_std{window}"
-                df[col_name] = (
+                df[f"{metric}_std{window}"] = (
                     df.groupby("player_id")[metric]
-                    .transform(lambda x: x.rolling(window, min_periods=2).std())
+                    .transform(lambda x: x.shift(1).rolling(window, min_periods=2).std())
                 )
 
-    # Ceiling/floor (max/min in window)
+    # Ceiling/floor (max/min in window) — prior games only
     for metric in ["passing_yards", "rushing_yards", "receiving_yards", "receptions"]:
         if metric in df.columns:
             df[f"{metric}_max5"] = (
                 df.groupby("player_id")[metric]
-                .transform(lambda x: x.rolling(5, min_periods=1).max())
+                .transform(lambda x: prior_roll(x, 5, "max"))
             )
             df[f"{metric}_min5"] = (
                 df.groupby("player_id")[metric]
-                .transform(lambda x: x.rolling(5, min_periods=1).min())
+                .transform(lambda x: prior_roll(x, 5, "min"))
             )
 
     return df
