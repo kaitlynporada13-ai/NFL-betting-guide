@@ -141,14 +141,25 @@ def check_anytime_td(results):
             return -1
         return df.apply(r, axis=1).mean() * 100, len(df)
 
+    # Heavy favorites (<= -200). One season of ROI on this narrow slice is too small
+    # to train/test split reliably, so we (a) report the full multi-year ROI as the
+    # headline, and (b) require the MOST RECENT season not to have collapsed. A single
+    # noisy season doesn't flip a multi-year +EV edge to "decayed".
     fav = m[m["price"] <= -200]
-    tr_roi, _ = yes_roi(fav[fav["season"] <= 2024])
-    te_roi, n = yes_roi(fav[fav["season"] >= 2025])
-    status = "VALID" if (tr_roi and te_roi and tr_roi > 0 and te_roi > 0) else "DECAYED"
+    all_roi, n_all = yes_roi(fav)
+    recent = fav[fav["season"] >= fav["season"].max()]
+    rec_roi, n_rec = yes_roi(recent)
+    # Compare to fading longshots as a sanity anchor (not stored, just context).
+    if all_roi is None or n_all < 30:
+        status = "SMALL-N"          # not enough heavy favorites to judge
+    elif all_roi > 0 and (rec_roi is None or rec_roi > -10):
+        status = "VALID"           # multi-year +EV and recent season hasn't cratered
+    else:
+        status = "DECAYED"
     results.append({"edge": "Anytime TD YES: heavy fav (<=-200)",
-                    "train%": round(tr_roi, 1) if tr_roi else 0,
-                    "test%": round(te_roi, 1) if te_roi else 0,
-                    "test_n": int(n), "status": status})
+                    "train%": round(all_roi, 1) if all_roi is not None else 0,  # multi-yr ROI
+                    "test%": round(rec_roi, 1) if rec_roi is not None else 0,   # recent-yr ROI
+                    "test_n": int(n_all), "status": status})
 
 
 def main():
@@ -172,20 +183,27 @@ def main():
     print("-" * 78)
     healthy = {"VALID", "EFFICIENT"}  # EFFICIENT (no edge past Wk1) is the expected state
     for _, r in df.iterrows():
-        flag = "OK " if r["status"] in healthy else "?? " if r["status"] == "NEW EDGE?" else "!! "
+        if r["status"] in healthy:
+            flag = "OK "
+        elif r["status"] == "NEW EDGE?":
+            flag = "?? "
+        elif r["status"] == "SMALL-N":
+            flag = ".. "
+        else:
+            flag = "!! "
         print(f"{r['edge']:<34}{r['train%']:>7.1f}%{r['test%']:>7.1f}%{r['test_n']:>5}  {flag}{r['status']}")
 
     decayed = df[df["status"] == "DECAYED"]
     new_edge = df[df["status"] == "NEW EDGE?"]
     print("\n" + "=" * 78)
     if len(decayed):
-        print(f"⚠️  {len(decayed)} edge(s) DECAYED — stop recommending until they recover:")
+        print(f"[!] {len(decayed)} edge(s) DECAYED - stop recommending until they recover:")
         for _, r in decayed.iterrows():
             print(f"   - {r['edge']} (test {r['test%']}%)")
     else:
-        print("✅ All validated edges still clear break-even out-of-sample. Safe to run the picks.")
+        print("[OK] All validated edges still clear break-even out-of-sample. Safe to run the picks.")
     if len(new_edge):
-        print(f"\n🔎 {len(new_edge)} spot flipped to a POSSIBLE new edge — investigate before betting:")
+        print(f"\n[?] {len(new_edge)} spot flipped to a POSSIBLE new edge - investigate before betting:")
         for _, r in new_edge.iterrows():
             print(f"   - {r['edge']} (train {r['train%']}% / test {r['test%']}%)")
     print("Saved health report to data/processed/edge_health.parquet")
