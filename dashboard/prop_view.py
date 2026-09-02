@@ -4,7 +4,8 @@ import pandas as pd
 from pathlib import Path
 
 PROC = Path(__file__).parent.parent / "data" / "processed"
-CONF_RANK = {"HIGH": 0, "MEDIUM-HIGH": 1, "MEDIUM": 2, "LOW": 3, "PASS": 4, "ROLE-CHANGE": 5}
+CONF_RANK = {"HIGH": 0, "MEDIUM-HIGH": 1, "MEDIUM": 2, "LOW": 3, "PASS": 4,
+             "ROLE-CHANGE": 5, "NO-EDGE": 6}
 
 
 def load_projections():
@@ -31,6 +32,12 @@ def render_market(market_label: str, icon: str = "🏈"):
     if sub.empty:
         st.info(f"No {market_label} props posted yet for this week.")
         st.stop()
+
+    # Week-awareness: past Week 1 there is no validated prop edge.
+    if (sub["confidence"] == "NO-EDGE").all():
+        st.error("**No validated edge this week.** The only prop edge that survived "
+                 "out-of-sample testing is the Week 1 rust under. Weeks 2-18 the prop market "
+                 "is efficient, so these projections are informational only — not bets.")
 
     # Role-change warning
     if "role_change" in sub.columns and sub["role_change"].any():

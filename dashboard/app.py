@@ -25,7 +25,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-CONF_RANK = {"HIGH": 0, "MEDIUM-HIGH": 1, "MEDIUM": 2, "LOW": 3, "PASS": 4, "ROLE-CHANGE": 5}
+CONF_RANK = {"HIGH": 0, "MEDIUM-HIGH": 1, "MEDIUM": 2, "LOW": 3, "PASS": 4,
+             "ROLE-CHANGE": 5, "NO-EDGE": 6}
 
 
 def load_projections():
@@ -44,27 +45,42 @@ season_start = date(2026, 9, 10)
 today = date.today()
 days = (season_start - today).days
 if days > 0:
+    nfl_week = 1
     st.caption(f"{days} days until Week 1 kickoff (Sep 10). Lines populate as FanDuel posts them.")
 else:
-    wk = max(1, (today - season_start).days // 7 + 1)
-    st.caption(f"Week {wk} — season active.")
+    nfl_week = min(18, (today - season_start).days // 7 + 1)
+    st.caption(f"Week {nfl_week} — season active.")
 
 # ===== EXECUTIVE SUMMARY =====
 st.markdown("### 📋 This Week's Strategy")
-st.markdown("""
+if nfl_week == 1:
+    st.markdown("""
 **Validated edge (tested out-of-sample, 2023-24 → 2025):** Week 1 player props lean **UNDER** —
 offenses underperform their talent in openers (rust, new schemes, unsettled rosters).
 
 - **Pass TD unders** are the strongest play (~67% historical hit rate)
 - **Rush yard unders** (~60%) and **pass yard unders** (~57%) next
 - **Receptions** are a thinner edge (~54%); **receiving yards** is weakest — bet sparingly
-- **No validated OVERS** in Week 1 — the rust effect swamps them
+- **Overs are shown where our projection clears the line, but capped low-confidence** — Week 1
+  overs only hit ~45-51% historically (rust), so they're informational, not green-lights
 - **The under hits harder when the line sits above a player's real baseline** (inflated lines)
 - **Avoid injury role-change players** — when a starter is hurt, the backup's line jumps and their
   baseline is stale (that's priced-in volume, not a real under). These are flagged AVOID.
 
 **Game totals:** the only validated totals edge is flat Week 1 unders — no in-season or matchup edge
 survived testing, so props are the sharper play. Bet flat, size modestly (2024 openers were a down year).
+""")
+else:
+    st.warning(f"""
+**Week {nfl_week} — no validated prop edge this week.**
+
+The only edge that survived out-of-sample testing is the **Week 1 rust under**. Across Weeks 2-18,
+we tested every market, every week-bucket, and the line-inflation angle — the prop market is
+**efficient** (hit rates sit at ~50%, below the 52.4% break-even, in both train and test samples).
+
+So this week the app shows projections **for reference only** — there is no green-light prop bet.
+Chasing props here would be betting into an efficient market and paying the vig. The disciplined
+play is to sit out props until we validate a Weeks-2+ edge (or wait for next Week 1).
 """)
 
 st.markdown("---")
@@ -79,7 +95,11 @@ else:
     best = df[df["confidence"].isin(["HIGH", "MEDIUM-HIGH"])].sort_values(
         ["crank", "hit_est"], ascending=[True, False], na_position="last")
     if best.empty:
-        st.info("No high-confidence plays on the board yet — check back as more lines post.")
+        if nfl_week != 1:
+            st.info(f"No best bets in Week {nfl_week} — no validated prop edge exists past Week 1 "
+                    "(see strategy note above). Sitting out props is the correct call this week.")
+        else:
+            st.info("No high-confidence plays on the board yet — check back as more lines post.")
     else:
         show = best[["player", "market", "line", "projection", "call", "confidence", "why"]].copy()
         show.columns = ["Player", "Prop", "Line", "Projection", "O/U", "Confidence", "Why"]

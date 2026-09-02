@@ -23,6 +23,19 @@ from pipeline.ingest_odds import pull_all_props_for_week
 RAW = get_data_dir("raw")
 PROC = get_data_dir("processed")
 
+# 2026 NFL season opener (Week 1 kickoff). Used to compute the current week so the
+# engine only applies the validated Week-1 edge in Week 1.
+SEASON_START = date(2026, 9, 10)
+
+
+def get_nfl_week(today: date | None = None) -> int:
+    """Current NFL week (1-18). <1 before the season = treat as Week 1 prep."""
+    today = today or date.today()
+    delta = (today - SEASON_START).days
+    if delta < 0:
+        return 1  # preseason / lines posting for the opener
+    return min(18, delta // 7 + 1)
+
 MARKET_STAT = {
     "player_pass_yds": "passing_yards",
     "player_pass_tds": "passing_tds",
@@ -152,6 +165,13 @@ def build_projections():
     baselines = load_baselines()
     role_up, role_reasons = load_role_changes()
 
+    nfl_week = get_nfl_week()
+    week1 = nfl_week == 1
+    if not week1:
+        print(f"[prop_projections] NFL Week {nfl_week}: NO validated prop edge exists past "
+              f"Week 1 (markets are efficient weeks 2-18, confirmed OOS). Projections shown "
+              f"as informational only; all props flagged NO-EDGE / no play.")
+
     rows = []
     for _, p in props.iterrows():
         market = p["market"]
@@ -223,6 +243,19 @@ def build_projections():
                     why = (f"Projection {projection:.1f} is below the {line} line ({base_str}); "
                            f"Week 1 {mk} unders hit ~{hit:.0%} (rust effect).")
                 conf = confidence_label(hit)
+
+        # WEEK-AWARENESS: the ONLY validated prop edge is the Week 1 rust under.
+        # Weeks 2-18 the market is efficient (OOS: ~50% train, no edge in ANY market
+        # or inflation bucket). So past Week 1 we keep the projection + mechanical call
+        # for reference but strip confidence to NO-EDGE — never green-light a prop.
+        # (Role-change AVOIDs stand on their own regardless of week.)
+        if not week1 and not role_changed:
+            conf = "NO-EDGE"
+            hit = None
+            proj_str = f"{projection:.1f}" if projection is not None else "n/a"
+            why = (f"Week {nfl_week}: no validated prop edge exists past Week 1 — the market is "
+                   f"efficient (tested OOS). Projection {proj_str} vs line {line} is informational "
+                   f"only; the {call.lower()} lean is NOT a bet. No play.")
 
         rows.append({
             "player": name, "market": mk, "market_key": market, "line": line,

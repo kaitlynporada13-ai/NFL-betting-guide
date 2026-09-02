@@ -103,6 +103,23 @@ def check_inflation(g, results):
                     "status": status})
 
 
+def check_weeks2plus(g, results):
+    """Confirm the market stays EFFICIENT past Week 1 (no prop edge). If this ever
+    starts clearing break-even in BOTH samples, it flips to a real edge worth adding."""
+    w2 = g[g["week"] >= 2]
+    tr = w2[w2["season"] <= 2024]["under_win"].mean() * 100
+    te = w2[w2["season"] >= 2025]["under_win"].mean() * 100
+    # "VALID (no-edge)" is the EXPECTED healthy state: efficient market, we sit out.
+    # Only becomes a real edge if BOTH clear break-even.
+    if tr >= 54 and te >= BREAKEVEN:
+        status = "NEW EDGE?"  # investigate — weeks 2+ suddenly beatable
+    else:
+        status = "EFFICIENT"  # expected: no play past Wk1
+    results.append({"edge": "Weeks 2-18 props (should be efficient)",
+                    "train%": round(tr, 1), "test%": round(te, 1),
+                    "test_n": int((w2["season"] >= 2025).sum()), "status": status})
+
+
 def check_anytime_td(results):
     """Anytime TD: heavy favorites (<= -200) betting YES should stay +EV; else -EV."""
     props = pd.read_parquet(RAW / "historical_props_all.parquet")
@@ -143,6 +160,7 @@ def main():
     g = _grade_props()
     check_prop_unders(g, results)
     check_inflation(g, results)
+    check_weeks2plus(g, results)
     check_totals(results)
     check_spreads(results)
     check_anytime_td(results)
@@ -152,18 +170,24 @@ def main():
 
     print(f"\n{'Edge':<34}{'Train%':>8}{'Test%':>8}{'n':>5}  Status")
     print("-" * 78)
+    healthy = {"VALID", "EFFICIENT"}  # EFFICIENT (no edge past Wk1) is the expected state
     for _, r in df.iterrows():
-        flag = "OK " if r["status"] == "VALID" else "!! "
+        flag = "OK " if r["status"] in healthy else "?? " if r["status"] == "NEW EDGE?" else "!! "
         print(f"{r['edge']:<34}{r['train%']:>7.1f}%{r['test%']:>7.1f}%{r['test_n']:>5}  {flag}{r['status']}")
 
     decayed = df[df["status"] == "DECAYED"]
+    new_edge = df[df["status"] == "NEW EDGE?"]
     print("\n" + "=" * 78)
     if len(decayed):
         print(f"⚠️  {len(decayed)} edge(s) DECAYED — stop recommending until they recover:")
         for _, r in decayed.iterrows():
             print(f"   - {r['edge']} (test {r['test%']}%)")
     else:
-        print("✅ All edges still clear break-even out-of-sample. Safe to run the picks.")
+        print("✅ All validated edges still clear break-even out-of-sample. Safe to run the picks.")
+    if len(new_edge):
+        print(f"\n🔎 {len(new_edge)} spot flipped to a POSSIBLE new edge — investigate before betting:")
+        for _, r in new_edge.iterrows():
+            print(f"   - {r['edge']} (train {r['train%']}% / test {r['test%']}%)")
     print("Saved health report to data/processed/edge_health.parquet")
 
 
