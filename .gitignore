@@ -18,6 +18,13 @@ data/raw/*.parquet
 data/processed/*.csv
 data/processed/*.parquet
 
+# ...except the 5 pick files the deployed app reads (regenerated weekly)
+!data/processed/prop_projections_latest.parquet
+!data/processed/totals_picks_latest.parquet
+!data/processed/spreads_picks_latest.parquet
+!data/processed/specials_picks_latest.parquet
+!data/processed/anytime_td_picks_latest.parquet
+
 # Model artifacts
 models/trained/*.pkl
 models/trained/*.joblib
