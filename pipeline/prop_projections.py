@@ -8,7 +8,9 @@ For every posted Week 1 player prop, output:
   - a short "why"
 
 Confidence is grounded in scripts/validate_props_deep.py results (train 2023-24 -> test 2025).
-Week 1 is UNDER-only (no validated overs). Line-above-baseline sharpens the under.
+CALL follows the projection: projection > line -> OVER, projection < line -> UNDER.
+Confidence is asymmetric because the data is: Week 1 UNDERS validate (54-67%), OVERS
+do NOT (best market ~45-51% OOS). So overs are shown honestly but capped low-confidence.
 """
 import pandas as pd
 import numpy as np
@@ -115,6 +117,31 @@ def confidence_label(hit):
     return "PASS"
 
 
+# Validated OUT-OF-SAMPLE Week 1 OVER hit rates (test 2025, from validate_props_deep.py
+# Layer 2: line-below-baseline). Overs are structurally weak in Week 1 (rust) — even
+# deflated lines went under more often. Best market (rush) only ~45%. So OVER calls
+# are shown (the projection says so) but capped LOW/PASS to reflect the real headwind.
+BASE_OVER = {
+    "player_pass_tds": 0.42, "player_rush_yds": 0.45, "player_pass_yds": 0.33,
+    "player_receptions": 0.49, "player_reception_yds": 0.51,
+}
+
+
+def over_hit(market, infl_pct):
+    """Projected-over hit estimate. The further projection sits above the line
+    (more negative inflation), the better the over — but capped by the weak
+    validated ceiling. None of these clear break-even, so overs stay low-conf."""
+    base = BASE_OVER.get(market, 0.45)
+    if infl_pct is None:
+        return base
+    # infl_pct = (line - baseline)/baseline; more negative => line well below norm => stronger over
+    if infl_pct <= -0.15:
+        return min(base + 0.06, 0.55)
+    if infl_pct <= -0.05:
+        return min(base + 0.03, 0.53)
+    return base
+
+
 def build_projections():
     props = pull_all_props_for_week()
     if props.empty:
@@ -144,47 +171,58 @@ def build_projections():
             projection = None
             infl_pct = None
 
-        hit = inflation_hit(market, infl_pct)
-
-        # Guardrail: backup / low-volume lines. The % inflation is misleading on
-        # tiny lines, so ignore inflation and cap confidence at MEDIUM.
+        mk = MARKET_LABEL[market]
         backup = is_backup_line(market, line)
-        if backup:
-            hit = min(BASE_UNDER.get(market, 0.50), 0.55)  # strip inflation bonus, cap
 
         # Role-change override: player promoted because someone ahead is hurt.
-        # Their 2025 baseline understates their new role -> the inflated-line "under"
-        # signal is FALSE. Do NOT call a confident under; flag as over-risk.
+        # Their 2025 baseline understates their new role -> the projection is unreliable.
         if role_changed:
             call = "AVOID (role change)"
             conf = "ROLE-CHANGE"
             hit = None
-        else:
-            # Week 1 is under-only; call is UNDER, confidence = validated hit rate
-            call = "UNDER"
-            conf = confidence_label(hit)
-
-        # Build the "why"
-        mk = MARKET_LABEL[market]
-        if role_changed:
             rsn = role_reasons.get(pkey, "role increased due to injury ahead")
-            why = (f"ROLE CHANGE — {rsn}. His 2025 baseline understates the new role, so the "
-                   f"high line is NOT a real under (it's priced-in volume). Over-risk; bet unders elsewhere.")
-        elif backup:
-            why = (f"Low-volume/backup line ({line}) — % inflation is misleading on small "
-                   f"lines; base Week 1 {mk} under only ~{hit:.0%}. Thin edge, size down.")
-        elif baseline is not None:
-            base_str = f"2025 avg {baseline:.1f}"
-            if infl_pct is not None and infl_pct >= 0.05:
-                why = (f"Line {line} is {infl_pct:+.0%} above his {base_str}; "
-                       f"Week 1 {mk} unders hit ~{hit:.0%} when the line is set above a player's norm.")
-            elif infl_pct is not None and infl_pct <= -0.10:
-                why = (f"Line {line} is below his {base_str}, but Week 1 rust still favors under "
-                       f"(no validated overs exist); modest edge ~{hit:.0%}.")
-            else:
-                why = (f"Line {line} ~ his {base_str}; Week 1 {mk} unders hit ~{hit:.0%} (rust effect).")
+            why = (f"ROLE CHANGE — {rsn}. His 2025 baseline understates the new role, so neither "
+                   f"the projection nor the line is trustworthy here. No play.")
+
+        # No baseline (rookie/new) -> can't project; default to the Week 1 under lean, low conf.
+        elif projection is None:
+            call = "UNDER"
+            hit = BASE_UNDER.get(market, 0.50)
+            conf = "LOW"
+            why = f"No 2025 baseline (new/rookie) — can't project. Default Week 1 {mk} under lean ~{hit:.0%}."
+
         else:
-            why = f"No 2025 baseline (new/rookie); default Week 1 {mk} under lean ~{hit:.0%}."
+            # CALL FOLLOWS THE PROJECTION. Projection is our number; if it clears the
+            # line the honest call is OVER, if it's below the line it's UNDER.
+            base_str = f"2025 avg {baseline:.1f} (proj {projection:.1f} w/ Wk1 rust)"
+            if projection > line:
+                call = "OVER"
+                hit = over_hit(market, infl_pct)
+                # Overs are structurally weak in Week 1; even a projection above the line
+                # only earns real confidence when it's a big gap AND market isn't a known trap.
+                conf = confidence_label(hit)
+                gap = (projection - line)
+                why = (f"Projection {projection:.1f} is above the {line} line ({base_str}) — "
+                       f"call is OVER. But Week 1 overs are structurally weak (rust): validated "
+                       f"~{hit:.0%} even for deflated lines. Lower-confidence; size down.")
+                if backup:
+                    conf = "PASS"
+                    why = (f"Projection {projection:.1f} clears {line}, but this is a low-volume/backup "
+                           f"line — the baseline is noisy and Week 1 overs don't validate. No play.")
+            else:
+                call = "UNDER"
+                hit = inflation_hit(market, infl_pct)
+                if backup:
+                    hit = min(BASE_UNDER.get(market, 0.50), 0.55)  # strip inflation bonus, cap
+                    why = (f"Low-volume/backup line ({line}) — % inflation is misleading on small "
+                           f"lines; base Week 1 {mk} under only ~{hit:.0%}. Thin edge, size down.")
+                elif infl_pct is not None and infl_pct >= 0.05:
+                    why = (f"Projection {projection:.1f} is under the {line} line, which sits {infl_pct:+.0%} "
+                           f"above his {base_str}; Week 1 {mk} unders hit ~{hit:.0%} when the line is inflated.")
+                else:
+                    why = (f"Projection {projection:.1f} is below the {line} line ({base_str}); "
+                           f"Week 1 {mk} unders hit ~{hit:.0%} (rust effect).")
+                conf = confidence_label(hit)
 
         rows.append({
             "player": name, "market": mk, "market_key": market, "line": line,
