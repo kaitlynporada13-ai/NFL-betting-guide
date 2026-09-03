@@ -29,6 +29,14 @@ data/processed/*.parquet
 models/trained/*.pkl
 models/trained/*.joblib
 
+# ...except the blended prop projection models + their OOS report (used live by the app)
+!models/trained/proj_player_pass_tds.pkl
+!models/trained/proj_player_pass_yds.pkl
+!models/trained/proj_player_rush_yds.pkl
+!models/trained/proj_player_receptions.pkl
+!models/trained/proj_player_reception_yds.pkl
+!data/processed/blended_model_report.parquet
+
 # IDE
 .idea/
 .vscode/
