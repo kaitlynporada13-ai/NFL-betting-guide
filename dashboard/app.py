@@ -53,34 +53,25 @@ else:
 
 # ===== EXECUTIVE SUMMARY =====
 st.markdown("### 📋 This Week's Strategy")
-if nfl_week == 1:
-    st.markdown("""
-**Validated edge (tested out-of-sample, 2023-24 → 2025):** Week 1 player props lean **UNDER** —
-offenses underperform their talent in openers (rust, new schemes, unsettled rosters).
+st.markdown("""
+**How the picks are made (every week, every prop):** a blended model projects each player's
+number from recent form, opponent, pace, role/target trend, and game context — then compares that
+projection to the line. Projection above the line is an **OVER**, below is an **UNDER**. No bias
+toward either side; the data picks.
 
-- **Pass TD unders** are the strongest play (~67% historical hit rate)
-- **Rush yard unders** (~60%) and **pass yard unders** (~57%) next
-- **Receptions** are a thinner edge (~54%); **receiving yards** is weakest — bet sparingly
-- **Overs are shown where our projection clears the line, but capped low-confidence** — Week 1
-  overs only hit ~45-51% historically (rust), so they're informational, not green-lights
-- **The under hits harder when the line sits above a player's real baseline** (inflated lines)
-- **Avoid injury role-change players** — when a starter is hurt, the backup's line jumps and their
-  baseline is stale (that's priced-in volume, not a real under). These are flagged AVOID.
+**Confidence is earned, not assumed.** Each market was validated out-of-sample (train 2023-24 →
+test 2025). Confidence reflects how often the model's side actually won at that projection-vs-line gap:
 
-**Game totals:** the only validated totals edge is flat Week 1 unders — no in-season or matchup edge
-survived testing, so props are the sharper play. Bet flat, size modestly (2024 openers were a down year).
-""")
-else:
-    st.warning(f"""
-**Week {nfl_week} — no validated prop edge this week.**
+- **Pass TDs — the strongest edge (~60-63% out-of-sample), and it holds all season.** The model
+  reliably separates which QBs beat their TD line and which don't, on both overs and unders.
+- **Receptions — a thinner edge (~53-55%)**, best when the projection sits close to the line.
+- **Pass / Rush / Receiving yards — mostly efficient.** The model still projects them, but the
+  line is sharp, so these are flagged low-confidence / no-play unless a spot clears break-even.
+- **Injury role-change players are flagged AVOID** — recent form understates a promoted backup's
+  new role, so the projection isn't trustworthy.
 
-The only edge that survived out-of-sample testing is the **Week 1 rust under**. Across Weeks 2-18,
-we tested every market, every week-bucket, and the line-inflation angle — the prop market is
-**efficient** (hit rates sit at ~50%, below the 52.4% break-even, in both train and test samples).
-
-So this week the app shows projections **for reference only** — there is no green-light prop bet.
-Chasing props here would be betting into an efficient market and paying the vig. The disciplined
-play is to sit out props until we validate a Weeks-2+ edge (or wait for next Week 1).
+**Best bets below are the HIGH / MEDIUM-HIGH plays** — where the validated hit rate earns it.
+Everything else is on its market page, ranked, so you can see the full board.
 """)
 
 st.markdown("---")

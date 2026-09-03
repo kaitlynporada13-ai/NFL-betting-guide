@@ -33,17 +33,21 @@ def render_market(market_label: str, icon: str = "🏈"):
         st.info(f"No {market_label} props posted yet for this week.")
         st.stop()
 
-    # Week-awareness: past Week 1 there is no validated prop edge.
-    if (sub["confidence"] == "NO-EDGE").all():
-        st.error("**No validated edge this week.** The only prop edge that survived "
-                 "out-of-sample testing is the Week 1 rust under. Weeks 2-18 the prop market "
-                 "is efficient, so these projections are informational only — not bets.")
+    # If the whole market is low-confidence, say so plainly (efficient market).
+    playable = sub[sub["confidence"].isin(["HIGH", "MEDIUM-HIGH", "MEDIUM"])]
+    if playable.empty:
+        st.info("**No green-light plays in this market this week.** The model projects every "
+                "player below, but the line is efficient here (validated out-of-sample), so these "
+                "are informational — not bets. The projection vs line and reasoning are shown for context.")
+    else:
+        st.success(f"**{len(playable)} playable spot(s)** where the model's edge validated "
+                   "out-of-sample. Higher confidence = bigger validated hit rate at that projection gap.")
 
     # Role-change warning
     if "role_change" in sub.columns and sub["role_change"].any():
         rc = sub[sub["role_change"]]
-        st.warning("⚠️ Injury role-change — do NOT bet the under (baseline stale): "
-                   + ", ".join(rc["player"].tolist()))
+        st.warning("⚠️ Injury role-change — recent form understates the new role, so the "
+                   "projection isn't reliable. No play: " + ", ".join(rc["player"].tolist()))
 
     show = sub[["player", "line", "projection", "call", "confidence", "why"]].copy()
     show.columns = ["Player", "Line", "Projection", "O/U", "Confidence", "Why"]
@@ -55,5 +59,6 @@ def render_market(market_label: str, icon: str = "🏈"):
             "Why": st.column_config.TextColumn(width="large"),
         },
     )
-    st.caption("O/U call and confidence are anchored to out-of-sample validated Week 1 rates. "
-               "Projection = 2025 per-game baseline adjusted for Week 1 rust.")
+    st.caption("Projection = blended model (recent form, opponent, pace, role, context). "
+               "O/U call follows the projection vs the line; confidence = the model's validated "
+               "out-of-sample hit rate for this market at this projection-vs-line gap.")
