@@ -183,12 +183,14 @@ def build_projections():
                              f"projection is unreliable. No play."))
             continue
 
-        # --- No features (rookie/new): can't project ---
-        if projection is None:
-            rows.append(_row(name, mk, market, line, None, "NO PROJECTION", "LOW", None,
+        # --- No features / degenerate projection: can't confidently project ---
+        # A ~0 projection means the player has near-zero recent usage (injured, benched,
+        # or barely played) — the number isn't trustworthy, so never green-light it.
+        if projection is None or projection <= 0.05:
+            rows.append(_row(name, mk, market, line, projection, "NO PROJECTION", "LOW", None,
                              backup, False, p,
-                             f"No recent data to project {mk} (new/rookie or name unmatched). "
-                             f"Model can't form a confident number — no play."))
+                             f"No usable recent data to project {mk} (new/rookie, injured, or "
+                             f"barely played). Model can't form a confident number — no play."))
             continue
 
         # --- CALL follows projection; CONFIDENCE from validated OOS hit rate ---

@@ -1,139 +1,280 @@
-generated: '2026-08-20T18:50:50.938737+00:00'
-top_plays:
-- confidence_tier: HIGH
-  direction: under
-  line: 229.5
-  market: player_pass_yds
-  player: Drake Maye
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). Pass yards very strong (70.6% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 230.5
-  market: player_pass_yds
-  player: Sam Darnold
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). Pass yards very strong (70.6% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 1.5
-  market: player_pass_tds
-  player: Drake Maye
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). Pass TDs especially strong (75.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 1.5
-  market: player_pass_tds
-  player: Sam Darnold
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). Pass TDs especially strong (75.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 21.5
-  market: player_rush_yds
-  player: George Holani
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 37.5
-  market: player_rush_yds
-  player: TreVeyon Henderson
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 84.5
-  market: player_reception_yds
-  player: Jaxon Smith-Njigba
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 5.5
-  market: player_rush_yds
-  player: Sam Darnold
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 2.5
-  market: player_receptions
-  player: AJ Barner
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 2.5
-  market: player_receptions
-  player: Rashid Shaheed
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 28.5
-  market: player_reception_yds
-  player: Rashid Shaheed
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit). [2 confirming signals]'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 21.5
-  market: player_rush_yds
-  player: Drake Maye
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit).'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 48.5
-  market: player_rush_yds
-  player: Jadarian Price
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit).'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 40.5
-  market: player_rush_yds
-  player: Rhamondre Stevenson
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit).'
-  strategy: Week 1 UNDER
-  units: 3.0
-- confidence_tier: HIGH
-  direction: under
-  line: 2.5
-  market: player_receptions
-  player: Cooper Kupp
-  reasoning: 'Week 1: Players rusty, no current-season data. Confirmed 3/3 seasons
-    (63.8% hit).'
-  strategy: Week 1 UNDER
-  units: 3.0
-total_plays: 22
 week: 1
+generated: '2026-09-03T15:41:22.032201+00:00'
+source: blended projection model (prop_projections_latest.parquet)
+total_plays: 45
+top_plays:
+- player: Jayden Daniels
+  market: Pass TDs
+  line: 0.5
+  projection: 1.4
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.4 vs line 0.5 (187% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Daniel Jones
+  market: Pass TDs
+  line: 1.5
+  projection: 1.9
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.9 vs line 1.5 (26% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Lamar Jackson
+  market: Pass TDs
+  line: 1.5
+  projection: 1.1
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.1 vs line 1.5 (27% gap) -> UNDER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Patrick Mahomes
+  market: Pass TDs
+  line: 1.5
+  projection: 1.0
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.0 vs line 1.5 (32% gap) -> UNDER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Jordan Love
+  market: Pass TDs
+  line: 1.5
+  projection: 1.0
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.0 vs line 1.5 (34% gap) -> UNDER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Kyler Murray
+  market: Pass TDs
+  line: 1.5
+  projection: 1.8
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.8 vs line 1.5 (21% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Malik Willis
+  market: Pass TDs
+  line: 0.5
+  projection: 1.5
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.5 vs line 0.5 (197% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Trevor Lawrence
+  market: Pass TDs
+  line: 1.5
+  projection: 2.6
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 2.6 vs line 1.5 (76% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Tyler Shough
+  market: Pass TDs
+  line: 1.5
+  projection: 1.1
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.1 vs line 1.5 (28% gap) -> UNDER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Jacoby Brissett
+  market: Pass TDs
+  line: 1.5
+  projection: 2.1
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 2.1 vs line 1.5 (41% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Geno Smith
+  market: Pass TDs
+  line: 0.5
+  projection: 1.3
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.632
+  reasoning: Model projects 1.3 vs line 0.5 (154% gap) -> OVER. This market+gap hit
+    63% out-of-sample (2025, n=258). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Dak Prescott
+  market: Pass TDs
+  line: 1.5
+  projection: 1.6
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.61
+  reasoning: Model projects 1.6 vs line 1.5 (4% gap) -> OVER. This market+gap hit
+    61% out-of-sample (2025, n=77). Projection blends recent form, opponent, pace,
+    role & context.
+- player: C.J. Stroud
+  market: Pass TDs
+  line: 1.5
+  projection: 1.5
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.61
+  reasoning: Model projects 1.5 vs line 1.5 (1% gap) -> UNDER. This market+gap hit
+    61% out-of-sample (2025, n=77). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Caleb Williams
+  market: Pass TDs
+  line: 1.5
+  projection: 1.6
+  direction: over
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.61
+  reasoning: Model projects 1.6 vs line 1.5 (5% gap) -> OVER. This market+gap hit
+    61% out-of-sample (2025, n=77). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Jared Goff
+  market: Pass TDs
+  line: 1.5
+  projection: 1.5
+  direction: under
+  units: 3.0
+  confidence_tier: HIGH
+  hit_rate_oos: 0.61
+  reasoning: Model projects 1.5 vs line 1.5 (3% gap) -> UNDER. This market+gap hit
+    61% out-of-sample (2025, n=77). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Cam Ward
+  market: Pass TDs
+  line: 1.5
+  projection: 1.3
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.3 vs line 1.5 (15% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Kirk Cousins
+  market: Pass TDs
+  line: 1.5
+  projection: 1.8
+  direction: over
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.8 vs line 1.5 (17% gap) -> OVER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Joe Burrow
+  market: Pass TDs
+  line: 2.5
+  projection: 2.9
+  direction: over
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 2.9 vs line 2.5 (16% gap) -> OVER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Bryce Young
+  market: Pass TDs
+  line: 1.5
+  projection: 1.2
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.2 vs line 1.5 (17% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Justin Herbert
+  market: Pass TDs
+  line: 1.5
+  projection: 1.3
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.3 vs line 1.5 (12% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Bo Nix
+  market: Pass TDs
+  line: 1.5
+  projection: 1.3
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.3 vs line 1.5 (11% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Brock Purdy
+  market: Pass TDs
+  line: 1.5
+  projection: 1.7
+  direction: over
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.7 vs line 1.5 (15% gap) -> OVER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Jaxson Dart
+  market: Pass TDs
+  line: 1.5
+  projection: 1.2
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.2 vs line 1.5 (20% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Aaron Rodgers
+  market: Pass TDs
+  line: 1.5
+  projection: 1.2
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.2 vs line 1.5 (17% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
+- player: Matthew Stafford
+  market: Pass TDs
+  line: 1.5
+  projection: 1.3
+  direction: under
+  units: 2.0
+  confidence_tier: MEDIUM-HIGH
+  hit_rate_oos: 0.58
+  reasoning: Model projects 1.3 vs line 1.5 (11% gap) -> UNDER. This market+gap hit
+    58% out-of-sample (2025, n=119). Projection blends recent form, opponent, pace,
+    role & context.
