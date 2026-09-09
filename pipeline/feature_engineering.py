@@ -37,13 +37,15 @@ def build_rolling_team_stats(team_stats: pd.DataFrame, windows: list[int] = [3, 
         "total_attempts", "total_completions",
     ]
 
+    # CRITICAL: shift(1) so a team's rolling stats use only games BEFORE the current one.
+    # Without this the current game's own result leaks into its features (target leakage).
     for window in windows:
         for metric in metrics:
             if metric in df.columns:
                 col_name = f"{metric}_roll{window}"
                 df[col_name] = (
                     df.groupby("team")[metric]
-                    .transform(lambda x: x.rolling(window, min_periods=1).mean())
+                    .transform(lambda x: x.shift(1).rolling(window, min_periods=1).mean())
                 )
 
     # Derived rolling metrics
@@ -173,10 +175,10 @@ def build_pace_features(team_stats: pd.DataFrame, games: pd.DataFrame) -> pd.Dat
     if "total_attempts" in df.columns and "total_carries" in df.columns:
         df["total_plays"] = df["total_attempts"] + df["total_carries"]
 
-        # Rolling pace
+        # Rolling pace — shift(1) to exclude the current game (no leakage)
         df["pace_roll5"] = (
             df.groupby("team")["total_plays"]
-            .transform(lambda x: x.rolling(5, min_periods=1).mean())
+            .transform(lambda x: x.shift(1).rolling(5, min_periods=1).mean())
         )
 
     return df
@@ -386,15 +388,15 @@ def build_game_features(
 
     # 1. Situational features
     game_features = build_situational_features(games)
-    print("  ✓ Situational features (rest, travel, surface, altitude)")
+    print("  OK Situational features (rest, travel, surface, altitude)")
 
     # 2. Rolling team stats
     rolling_team = build_rolling_team_stats(team_stats)
-    print("  ✓ Rolling team performance metrics")
+    print("  OK Rolling team performance metrics")
 
     # 3. Pace features
     pace = build_pace_features(team_stats, games)
-    print("  ✓ Pace-of-play features")
+    print("  OK Pace-of-play features")
 
     # 4. Merge home team stats
     home_cols = {c: f"home_{c}" for c in rolling_team.columns if c not in ["team", "season", "week"]}
@@ -424,7 +426,7 @@ def build_game_features(
             on="game_id",
             how="left",
         )
-        print("  ✓ Weather impact features")
+        print("  OK Weather impact features")
 
     # 7. Derived differential features
     # Offensive power differential (home - away)
@@ -462,11 +464,11 @@ def build_player_prop_features(
 
     # 1. Rolling player stats
     player_features = build_player_rolling_stats(player_stats)
-    print("  ✓ Rolling player metrics + consistency")
+    print("  OK Rolling player metrics + consistency")
 
     # 2. Matchup features (defensive rankings)
     matchup_features = build_matchup_features(player_stats, games, team_stats)
-    print("  ✓ Defensive matchup features")
+    print("  OK Defensive matchup features")
 
     # 3. Merge game situational features
     game_sit = build_situational_features(games)
@@ -495,7 +497,7 @@ def build_player_prop_features(
         )
         if "team" in player_features.columns:
             player_features.drop(columns=["team"], inplace=True, errors="ignore")
-        print("  ✓ Red zone features (team-level)")
+        print("  OK Red zone features (team-level)")
 
     # 5. Merge player red zone targets
     player_rz_path = proc_dir / "player_redzone_targets.parquet"
@@ -515,7 +517,7 @@ def build_player_prop_features(
                 how="left",
                 suffixes=("", "_rz"),
             )
-            print("  ✓ Player red zone targets")
+            print("  OK Player red zone targets")
 
     # 6. Merge air yards profile
     air_path = proc_dir / "player_air_yards_profile.parquet"
@@ -534,7 +536,7 @@ def build_player_prop_features(
                 how="left",
                 suffixes=("", "_air"),
             )
-            print("  ✓ Air yards profile (depth, YAC)")
+            print("  OK Air yards profile (depth, YAC)")
 
     # 7. Merge QB pressure profile
     qbp_path = proc_dir / "qb_pressure_profile.parquet"
@@ -553,7 +555,7 @@ def build_player_prop_features(
                 how="left",
                 suffixes=("", "_pressure"),
             )
-            print("  ✓ QB pressure profile")
+            print("  OK QB pressure profile")
 
     # 8. Merge snap count data (workload stability)
     raw_dir = get_data_dir("raw")
@@ -582,7 +584,7 @@ def build_player_prop_features(
         )
         if "player" in player_features.columns and "player" != name_col:
             player_features.drop(columns=["player"], inplace=True, errors="ignore")
-        print("  ✓ Snap count features (workload stability)")
+        print("  OK Snap count features (workload stability)")
 
     # 9. Merge goal-line carries (for RBs/TD model)
     gl_path = proc_dir / "player_goalline_carries.parquet"
@@ -601,7 +603,7 @@ def build_player_prop_features(
                 how="left",
                 suffixes=("", "_gl"),
             )
-            print("  ✓ Goal-line carries")
+            print("  OK Goal-line carries")
 
     print(f"  Final feature set: {player_features.shape[1]} columns, {len(player_features)} rows")
     return player_features
