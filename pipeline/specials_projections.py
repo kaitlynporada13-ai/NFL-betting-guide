@@ -17,6 +17,20 @@ from pipeline.ingest_odds import pull_game_odds
 
 RAW = get_data_dir("raw")
 PROC = get_data_dir("processed")
+SEASON_START = date(2026, 9, 10)  # Week 1 Thursday
+
+
+def _filter_to_week(df: pd.DataFrame, week: int) -> pd.DataFrame:
+    """Game odds pulls return ALL upcoming games (totals/spreads post 1-2 weeks ahead).
+    Filter to only this week's games by kickoff date so specials don't mix weeks."""
+    from datetime import timedelta
+    if df.empty or "commence_time" not in df.columns:
+        return df
+    start = SEASON_START + timedelta(days=(week - 1) * 7)
+    end = start + timedelta(days=7)
+    ct = pd.to_datetime(df["commence_time"], errors="coerce", utc=True).dt.tz_localize(None)
+    mask = (ct >= pd.Timestamp(start)) & (ct < pd.Timestamp(end))
+    return df[mask].copy()
 
 
 def base_rates():
@@ -64,6 +78,7 @@ def build_specials():
     odds = pull_game_odds(markets="totals")
     if odds.empty:
         return pd.DataFrame()
+    odds = _filter_to_week(odds, current_week())  # drop any future-week games already posted
     games = odds[["game_id", "home_team", "away_team", "commence_time"]].drop_duplicates()
     ct = pd.to_datetime(games["commence_time"], utc=True, errors="coerce")
     games["hour_et"] = (ct - pd.Timedelta(hours=4)).dt.hour

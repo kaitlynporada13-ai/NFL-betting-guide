@@ -33,18 +33,42 @@ NAME_TO_ABBR = {
 }
 
 
+SEASON_START = date(2026, 9, 10)  # Week 1 Thursday
+
+
 def current_week():
-    ss = date(2026, 9, 10)
+    ss = SEASON_START
     t = date.today()
     if t < ss:
         return 1 if (ss - t).days <= 28 else 0
     return min(max(1, (t - ss).days // 7 + 1), 22)
 
 
+def week_window(week: int):
+    """[start, end) datetime bounds (UTC-naive dates) for a given NFL week's games."""
+    from datetime import timedelta
+    start = SEASON_START + timedelta(days=(week - 1) * 7)
+    end = start + timedelta(days=7)
+    return start, end
+
+
+def _filter_to_week(odds: pd.DataFrame, week: int) -> pd.DataFrame:
+    """Odds pulls return ALL upcoming games (sometimes 2+ weeks out, since totals/spreads
+    post earlier than props). Filter to only this week's games by kickoff date so we never
+    mislabel a future week's game with this week's rules."""
+    if odds.empty or "commence_time" not in odds.columns:
+        return odds
+    start, end = week_window(week)
+    ct = pd.to_datetime(odds["commence_time"], errors="coerce", utc=True).dt.tz_localize(None)
+    mask = (ct >= pd.Timestamp(start)) & (ct < pd.Timestamp(end))
+    return odds[mask].copy()
+
+
 def build_totals(week):
     odds = pull_game_odds(markets="totals")
     if odds.empty:
         return pd.DataFrame()
+    odds = _filter_to_week(odds, week)  # drop any future-week games already posted
     tot = odds[(odds["market"] == "totals") & (odds["outcome_name"] == "Over")]
     rows = []
     for _, r in tot.iterrows():
@@ -72,6 +96,7 @@ def build_spreads(week):
     odds = pull_game_odds(markets="spreads")
     if odds.empty:
         return pd.DataFrame()
+    odds = _filter_to_week(odds, week)  # drop any future-week games already posted
     spreads = odds[odds["market"] == "spreads"]
     rows = []
     for gid, grp in spreads.groupby("game_id"):
