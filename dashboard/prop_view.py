@@ -7,6 +7,24 @@ PROC = Path(__file__).parent.parent / "data" / "processed"
 CONF_RANK = {"HIGH": 0, "MEDIUM-HIGH": 1, "MEDIUM": 2, "LOW": 3, "PASS": 4,
              "ROLE-CHANGE": 5, "NO-EDGE": 6}
 
+TEAM_ABBR = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+    "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+    "San Francisco 49ers": "SF", "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS",
+}
+
+
+def _abbr(team: str) -> str:
+    return TEAM_ABBR.get(team, team)
+
 
 def load_projections():
     path = PROC / "prop_projections_latest.parquet"
@@ -32,6 +50,24 @@ def render_market(market_label: str, icon: str = "🏈"):
     if sub.empty:
         st.info(f"No {market_label} props posted yet for this week.")
         st.stop()
+
+    # --- Game filter pills ---
+    if "home_team" in sub.columns and "away_team" in sub.columns:
+        sub = sub.copy()
+        sub["matchup"] = sub["away_team"].map(_abbr) + " @ " + sub["home_team"].map(_abbr)
+        matchups = sorted(sub["matchup"].dropna().unique())
+        if matchups:
+            selected = st.pills(
+                "Filter by game",
+                matchups,
+                selection_mode="multi",
+                key=f"game_pills_{market_label}",
+            )
+            if selected:
+                sub = sub[sub["matchup"].isin(selected)]
+            if sub.empty:
+                st.info("No props for the selected game(s).")
+                st.stop()
 
     # If the whole market is low-confidence, say so plainly (efficient market).
     playable = sub[sub["confidence"].isin(["HIGH", "MEDIUM-HIGH", "MEDIUM"])]

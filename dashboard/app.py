@@ -85,6 +85,18 @@ if df is None:
 else:
     best = df[df["confidence"].isin(["HIGH", "MEDIUM-HIGH"])].sort_values(
         ["crank", "hit_est"], ascending=[True, False], na_position="last")
+
+    # Game filter pills
+    if not best.empty and "home_team" in best.columns and "away_team" in best.columns:
+        from prop_view import _abbr
+        best = best.copy()
+        best["matchup"] = best["away_team"].map(_abbr) + " @ " + best["home_team"].map(_abbr)
+        matchups = sorted(best["matchup"].dropna().unique())
+        if matchups:
+            selected = st.pills("Filter by game", matchups, selection_mode="multi", key="home_game_pills")
+            if selected:
+                best = best[best["matchup"].isin(selected)]
+
     if best.empty:
         if nfl_week != 1:
             st.info(f"No best bets in Week {nfl_week} — no validated prop edge exists past Week 1 "
